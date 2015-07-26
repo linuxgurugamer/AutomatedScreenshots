@@ -477,13 +477,13 @@ namespace AutomatedScreenshots
 					UT = Planetarium.GetUniversalTime();
 				f = f.Replace("[UT]", Math.Round(UT).ToString());
 			}
-			//if (f.Contains("[save]"))
-			//{
-			//	string save = "NA";
-			//	if (HighLogic.SaveFolder != null && HighLogic.SaveFolder.Trim().Length > 0)
-			//		save = HighLogic.SaveFolder;
-			//	f = f.Replace("[save]", save);
-			//}
+			if (f.Contains("[save]"))
+			{
+				string save = "NA";
+				if (HighLogic.SaveFolder != null && HighLogic.SaveFolder.Trim().Length > 0)
+					save = HighLogic.SaveFolder;
+				f = f.Replace("[save]", save);
+			}
 			//if (f.Contains("[version]"))
 			//{
 			//	string version = Versioning.GetVersionString();
