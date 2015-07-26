@@ -75,10 +75,11 @@ namespace AutomatedScreenshots
 
 		public void OnGUIShowApplicationLauncher ()
 		{
+			//Log.Info ("OnGUIShowApplicationLauncher");
 			if (!AS.configuration.BlizzyToolbarIsAvailable || !AS.configuration.useBlizzyToolbar) {
 				if (appLaucherHidden) {
-					UpdateToolbarStock ();
 					appLaucherHidden = false;
+					UpdateToolbarStock ();
 				}
 			}
 		}
@@ -185,46 +186,33 @@ namespace AutomatedScreenshots
 			GUILayout.Label ("Screenshot Interval in seconds: ");
 			interval = GUILayout.TextField (interval, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
 			GUILayout.EndHorizontal ();
-//				GUILayout.EndVertical ();
 
-//				GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("Convert to JPG:");
 			newConvertToJPG = GUILayout.Toggle (newConvertToJPG, "", GUILayout.MinWidth (30F));
 			GUILayout.EndHorizontal ();
-//				GUILayout.EndVertical ();
 
-//				GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("Keep original PNG:");
 			newKeepOrginalPNG = GUILayout.Toggle (newKeepOrginalPNG, "", GUILayout.MinWidth (30F));
 			GUILayout.EndHorizontal ();
-//				GUILayout.EndVertical ();
 
-//				GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("Screenshot path:");
-			//			GUILayout.EndHorizontal ();GUILayout.BeginHorizontal ();
 
 			newScreenshotPath = GUILayout.TextField (newScreenshotPath, GUILayout.MinWidth (50F), GUILayout.MaxWidth (300F));
 			GUILayout.EndHorizontal ();
-//				GUILayout.EndVertical ();
 
-//				GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label ("File Prefix:");
-			newFilename = GUILayout.TextField (newFilename, GUILayout.MinWidth (30F), GUILayout.MaxWidth (40F));
+			GUILayout.Label ("Filename Format:");
+			newFilename = GUILayout.TextField (newFilename, GUILayout.MinWidth (30F), GUILayout.MaxWidth (160F));
 			GUILayout.EndHorizontal ();
-//				GUILayout.EndVertical ();
 
-//				GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("JPEG Quality (1-100):");
 			JPGQuality = GUILayout.TextField (JPGQuality, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
 			GUILayout.EndHorizontal ();
-//				GUILayout.EndVertical ();
 
-//				GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("Screenshot after scene change:");
 			newScreenshotOnSceneChange = GUILayout.Toggle (newScreenshotOnSceneChange, "");
@@ -240,14 +228,10 @@ namespace AutomatedScreenshots
 			newUseBlizzyToolbar = GUILayout.Toggle (newUseBlizzyToolbar, "");
 			GUILayout.EndHorizontal ();
 
-			//				GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("Activation Keycode:");
 			newKeycode = GUILayout.TextField (newKeycode, GUILayout.MinWidth (30F), GUILayout.MaxWidth (40F));
 			GUILayout.EndHorizontal ();
-			//				GUILayout.EndVertical ();
-
-
 
 
 // Following #pragma disables the warning about unused variable
@@ -326,6 +310,5 @@ namespace AutomatedScreenshots
 
 			}
 		}
-
 	}
 }

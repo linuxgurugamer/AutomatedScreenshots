@@ -40,7 +40,7 @@ namespace AutomatedScreenshots
 			convertToJPG = true;
 			keepOrginalPNG = false;
 			screenshotPath = FileOperations.ROOT_PATH + "Screenshots/";
-			filename = "AS-";
+			filename = "AS-[cnt]";
 			asynchronous = false;
 			JPGQuality = 75;
 			screenshotOnSceneChange = false;
@@ -54,8 +54,7 @@ namespace AutomatedScreenshots
 				return instance; 
 			}
 		}
-
-
+			
 		public void Save ()
 		{
 			Log.Info ("Configuration.Save");

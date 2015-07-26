@@ -55,7 +55,7 @@ namespace AutomatedScreenshots
 				
 			configFileNode.SetValue ("logLevel", ((ushort)configuration.logLevel).ToString (), true);
 			configFileNode.SetValue ("screenshotPath", configuration.screenshotPath.ToString (), true);
-			configFileNode.SetValue ("filenamePrefix", configuration.filename.ToString (), true);
+			configFileNode.SetValue ("filenameFormat", configuration.filename.ToString (), true);
 			configFileNode.SetValue ("screenshotAtIntervals", configuration.screenshotAtIntervals.ToString (), true);
 			configFileNode.SetValue ("screenshotInterval", configuration.screenshotInterval.ToString (), true);
 			configFileNode.SetValue ("convertToJPG", configuration.convertToJPG.ToString (), true);
@@ -67,38 +67,63 @@ namespace AutomatedScreenshots
 			configFileNode.SetValue ("onSpecialEvent", configuration.onSpecialEvent.ToString (), true);
 			configFileNode.SetValue ("keycode", configuration.keycode.ToString (), true);
 		
-			configuration.keycode = AS.setActiveKeycode (configuration.keycode.ToString()).ToString();
+			configuration.keycode = AS.setActiveKeycode (configuration.keycode.ToString ()).ToString ();
 			configFile.Save (AS_CFG_FILE);
 		}
 
+		//
+		// The following functions are used when loading data from the config file
+		// They make sure that if a value is missing, that the old value will be used.
+		// 
+		static string SafeLoad (string value, string oldvalue)
+		{
+			if (value == null)
+				return oldvalue;
+			return value;
+		}
+		static string SafeLoad (string value, bool oldvalue)
+		{
+			if (value == null)
+				return oldvalue.ToString();
+			return value;
+		}
+		static string SafeLoad (string value, ushort oldvalue)
+		{
+			if (value == null)
+				return oldvalue.ToString();
+			return value;
+		}
 		public static void LoadConfiguration (Configuration configuration, String file)
 		{
 			configFile = ConfigNode.Load (AS_CFG_FILE);
+	
 			if (configFile != null) {
 				Log.Info ("configFile loaded,file: " + AS_CFG_FILE);
 				configFileNode = configFile.GetNode (AS_NODENAME);
 				if (configFileNode != null) {
-					configuration.logLevel = (Log.LEVEL)int.Parse (configFileNode.GetValue ("logLevel"));
-					configuration.screenshotPath = configFileNode.GetValue ("screenshotPath");
+					
+					configuration.logLevel = (Log.LEVEL)int.Parse (SafeLoad (configFileNode.GetValue ("logLevel"), configuration.logLevel.ToString ()));
+					configuration.screenshotPath = SafeLoad (configFileNode.GetValue ("screenshotPath"), configuration.screenshotPath);
 					if (configuration.screenshotPath [configuration.screenshotPath.Length - 1] != '/' && configuration.screenshotPath [configuration.screenshotPath.Length - 1] != '\\')
 						configuration.screenshotPath += '/';
-					if (!(configuration.filename.Contains ("/") || configuration.filename.Contains ("\\")))
-						configuration.filename = configFileNode.GetValue ("filenamePrefix");
-					else
-						configuration.filename = "AS-";
-					configuration.screenshotAtIntervals = bool.Parse (configFileNode.GetValue ("screenshotAtIntervals"));
-					configuration.screenshotInterval = ushort.Parse (configFileNode.GetValue ("screenshotInterval"));
-					configuration.convertToJPG = bool.Parse (configFileNode.GetValue ("convertToJPG"));
-					configuration.keepOrginalPNG = bool.Parse (configFileNode.GetValue ("keepOrginalPNG"));
-					configuration.JPGQuality = ushort.Parse (configFileNode.GetValue ("JPGQuality"));
-					configuration.asynchronous = bool.Parse (configFileNode.GetValue ("asynchronous"));
-					configuration.screenshotOnSceneChange = bool.Parse (configFileNode.GetValue ("screenshotOnSceneChange"));
-					configuration.useBlizzyToolbar = bool.Parse (configFileNode.GetValue ("useBlizzyToolbar"));
-					configuration.onSpecialEvent = bool.Parse (configFileNode.GetValue ("onSpecialEvent"));
-					configuration.keycode = configFileNode.GetValue ("keycode");
+
+					configuration.filename = SafeLoad (configFileNode.GetValue ("filenameFormat"), configuration.filename);
+					if ((configuration.filename.Contains ("/") || configuration.filename.Contains ("\\")))
+						configuration.filename = "AS-[cnt]";
+
+					configuration.screenshotAtIntervals = bool.Parse (SafeLoad(configFileNode.GetValue ("screenshotAtIntervals"),configuration.screenshotAtIntervals));
+					configuration.screenshotInterval = ushort.Parse (SafeLoad(configFileNode.GetValue ("screenshotInterval"),configuration.screenshotInterval));
+					configuration.convertToJPG = bool.Parse (SafeLoad(configFileNode.GetValue ("convertToJPG"),configuration.convertToJPG));
+					configuration.keepOrginalPNG = bool.Parse (SafeLoad(configFileNode.GetValue ("keepOrginalPNG"),configuration.keepOrginalPNG));
+					configuration.JPGQuality = ushort.Parse (SafeLoad(configFileNode.GetValue ("JPGQuality"),configuration.JPGQuality));
+					configuration.asynchronous = bool.Parse (SafeLoad(configFileNode.GetValue ("asynchronous"),configuration.asynchronous));
+					configuration.screenshotOnSceneChange = bool.Parse (SafeLoad(configFileNode.GetValue ("screenshotOnSceneChange"),configuration.screenshotOnSceneChange));
+					configuration.useBlizzyToolbar = bool.Parse (SafeLoad(configFileNode.GetValue ("useBlizzyToolbar"),configuration.useBlizzyToolbar));
+					configuration.onSpecialEvent = bool.Parse (SafeLoad(configFileNode.GetValue ("onSpecialEvent"),configuration.onSpecialEvent));
+					configuration.keycode = SafeLoad(configFileNode.GetValue ("keycode"),configuration.keycode);
 					if (configuration.keycode == null)
 						configuration.keycode = "F6";
-					configuration.keycode= AS.setActiveKeycode (configuration.keycode.ToString()).ToString();
+					configuration.keycode = AS.setActiveKeycode (configuration.keycode.ToString ()).ToString ();
 				}
 			}
 		}

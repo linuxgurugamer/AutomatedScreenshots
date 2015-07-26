@@ -84,12 +84,9 @@ namespace AutomatedScreenshots
 				RegisterEvents ();
 				gui.OnGUIApplicationLauncherReady ();
 #if (STOCKTOOLBAR)
-			//if ((!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar))
 				{
-			//		gui.OnGUIApplicationLauncherReady ();
 					GameEvents.onGUIApplicationLauncherReady.Add (gui.OnGUIApplicationLauncherReady);
 				}
-			
 #endif
 			}
 
@@ -190,8 +187,11 @@ namespace AutomatedScreenshots
 						}
 						do {
 							cnt++;
-							pngName = FileOperations.ScreenshotFolder () + configuration.filename + cnt.ToString () + ".png";
-							jpgName = FileOperations.ScreenshotFolder () + configuration.filename + cnt.ToString () + ".jpg";
+							string s = AddInfo(configuration.filename, cnt);
+							//pngName = FileOperations.ScreenshotFolder () + configuration.filename + cnt.ToString () + ".png";
+							//jpgName = FileOperations.ScreenshotFolder () + configuration.filename + cnt.ToString () + ".jpg";
+							pngName = configuration.screenshotPath + s + ".png";
+							jpgName = configuration.screenshotPath + s + ".jpg";
 						} while (System.IO.File.Exists (pngName) || System.IO.File.Exists (jpgName));
 							
 						Log.Info ("Update: Screenshotfolder:" + pngName);
@@ -430,6 +430,128 @@ namespace AutomatedScreenshots
 			}
 		
 			return AS.activeKeycode;
+		}
+
+		//
+		// Following taken from SensibleScreenshot
+		//
+		public string ConvertDateString()
+		{
+			string dateFormat = "yyyy-MM-dd--HH-mm-ss";
+
+			return DateTime.Now.ToString(dateFormat);
+		}
+
+		public int[] ConvertUT(double UT)
+		{
+			double time = UT;
+			int[] ret = {0, 0, 0, 0, 0};
+			ret[0] = (int)Math.Floor(time / (KSPUtil.Year))+1; //year
+			time %= (KSPUtil.Year);
+			ret[1] = (int)Math.Floor(time / KSPUtil.Day)+1; //days
+			time %= (KSPUtil.Day);
+			ret[2] = (int)Math.Floor(time / (3600)); //hours
+			time %= (3600);
+			ret[3] = (int)Math.Floor(time / (60)); //minutes
+			time %= (60);
+			ret[4] = (int)Math.Floor(time); //seconds
+
+			return ret; 
+		}
+
+		public string AddInfo(string original, int cnt)
+		{
+			string f = original;
+			if (f.Contains ("[cnt]")) {
+				f = f.Replace ("[cnt]", cnt.ToString ());
+			}
+
+			if (f.Contains("[date]"))
+			{
+				f = f.Replace("[date]", ConvertDateString());
+			}
+			if (f.Contains("[UT]"))
+			{
+				double UT = 0;
+				if (Planetarium.fetch != null)
+					UT = Planetarium.GetUniversalTime();
+				f = f.Replace("[UT]", Math.Round(UT).ToString());
+			}
+			//if (f.Contains("[save]"))
+			//{
+			//	string save = "NA";
+			//	if (HighLogic.SaveFolder != null && HighLogic.SaveFolder.Trim().Length > 0)
+			//		save = HighLogic.SaveFolder;
+			//	f = f.Replace("[save]", save);
+			//}
+			//if (f.Contains("[version]"))
+			//{
+			//	string version = Versioning.GetVersionString();
+			//	f = f.Replace("[version]", version);
+			//}
+			if (f.Contains("[vessel]"))
+			{
+				string vessel = "NA";
+				if (HighLogic.LoadedSceneIsFlight && FlightGlobals.ActiveVessel != null)
+					vessel = FlightGlobals.ActiveVessel.vesselName;
+				f = f.Replace("[vessel]", vessel);
+			}
+			if (f.Contains("[body]"))
+			{
+				string body = "NA";
+				if (Planetarium.fetch != null)
+					body = Planetarium.fetch.CurrentMainBody.bodyName;
+				f = f.Replace("[body]", body);
+			}
+			if (f.Contains("[situation]"))
+			{
+				string sit = "NA";
+				if (HighLogic.LoadedSceneIsFlight && FlightGlobals.ActiveVessel != null)
+				{
+					sit = FlightGlobals.ActiveVessel.situation.ToString();
+				}
+				f = f.Replace("[situation]", sit);
+			}
+			if (f.Contains("[biome]"))
+			{
+				string biome = "NA";
+				if (HighLogic.LoadedSceneIsFlight && FlightGlobals.ActiveVessel != null)
+					biome = ScienceUtil.GetExperimentBiome(FlightGlobals.ActiveVessel.mainBody, FlightGlobals.ActiveVessel.latitude, FlightGlobals.ActiveVessel.longitude);
+				f = f.Replace("[biome]", biome);
+			}
+			int[] times = { 0, 0, 0, 0, 0 };
+			if (Planetarium.fetch != null)
+				times = ConvertUT(Planetarium.GetUniversalTime());
+			if (f.Contains("[year]"))
+			{
+				string time = times[0].ToString();
+				f = f.Replace("[year]", time);
+			}
+			if (f.Contains("[day]"))
+			{
+				string time = times[1].ToString();
+				f = f.Replace("[day]", time);
+			}
+			if (f.Contains("[hour]"))
+			{
+				string time = times[2].ToString();
+				f = f.Replace("[hour]", time);
+			}
+			if (f.Contains("[min]"))
+			{
+				string time = times[3].ToString();
+				f = f.Replace("[min]", time);
+			}
+			if (f.Contains("[sec]"))
+			{
+				string time = times[4].ToString();
+				f = f.Replace("[sec]", time);
+			}
+			// In case they don't have anything there
+			if (f == original) {
+				f = f = cnt.ToString ();
+			}
+			return f;
 		}
 	}
 }

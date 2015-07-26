@@ -1,15 +1,15 @@
 ﻿<Properties StartupItem="AutomatedScreenshots.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="src\AS_ToolbarButtons.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="src\gui\AS_gui.cs">
     <Files>
-      <File FileName="src\gui\AS_gui.cs" Line="323" Column="28" />
-      <File FileName="src\util\Configuration.cs" Line="63" Column="30" />
-      <File FileName="src\util\FileOperations.cs" Line="1" Column="1" />
+      <File FileName="src\gui\AS_gui.cs" Line="221" Column="33" />
+      <File FileName="src\util\Configuration.cs" Line="42" Column="18" />
+      <File FileName="src\util\FileOperations.cs" Line="77" Column="6" />
       <File FileName="src\util\Log.cs" Line="1" Column="1" />
       <File FileName="src\gui\ASInfoDisplay.cs" Line="1" Column="1" />
-      <File FileName="src\AutomatedScreenshots.cs" Line="90" Column="87" />
+      <File FileName="src\AutomatedScreenshots.cs" Line="193" Column="46" />
       <File FileName="src\SharedStuff\ToolbarWrapper.cs" Line="1" Column="1" />
-      <File FileName="src\AS_ToolbarButtons.cs" Line="44" Column="8" />
+      <File FileName="src\AS_ToolbarButtons.cs" Line="33" Column="23" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

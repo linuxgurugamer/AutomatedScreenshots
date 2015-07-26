@@ -20,7 +20,8 @@
     <ConsolePause>false</ConsolePause>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="" />
+        <Command type="AfterBuild" command="xcopy ${TargetFile}  R:\KSP_1.0.4_Dev\GameData\SpaceTux\AS\Plugins\  /Y" externalConsole="True" pauseExternalConsole="True" />
+        <Command type="AfterBuild" command="xcopy ${ProjectDir}\src\Textures\*  R:\KSP_1.0.4_Dev\GameData\SpaceTux\AS\Textures /Y" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -62,5 +63,15 @@
     <Folder Include="src\util\" />
     <Folder Include="src\Textures\" />
     <Folder Include="src\SharedStuff\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Textures\AS_24.png" />
+    <None Include="src\Textures\AS_24_green.png" />
+    <None Include="src\Textures\AS_24_white.png" />
+    <None Include="src\Textures\AS_38.png" />
+    <None Include="src\Textures\AS_38_green.png" />
+    <None Include="src\Textures\AS_38_white.png" />
+    <None Include="src\Textures\E8c6GAzTE.jpg" />
+    <None Include="src\Textures\E8c6GAzTE.png" />
   </ItemGroup>
 </Project>
