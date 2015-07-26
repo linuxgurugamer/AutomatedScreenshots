@@ -26,13 +26,14 @@ namespace AutomatedScreenshots
 		public bool screenshotOnSceneChange { get; set; }
 		public bool onSpecialEvent { get; set; }
 		public bool useBlizzyToolbar { get; set; }
+		public bool hideUIOnScreenshot { get; set; }
 		public string keycode { get; set; }
 
 		internal Boolean BlizzyToolbarIsAvailable = false;
 
 		public Configuration ()
 		{
-			logLevel = Log.LEVEL.INFO;
+			logLevel = Log.LEVEL.WARNING;
 			Log.Info ("Configuration - Setting default config");
 
 			screenshotAtIntervals = false;
@@ -40,6 +41,7 @@ namespace AutomatedScreenshots
 			convertToJPG = true;
 			keepOrginalPNG = false;
 			screenshotPath = FileOperations.ROOT_PATH + "Screenshots/";
+			hideUIOnScreenshot = false;
 			filename = "AS-[cnt]";
 			asynchronous = false;
 			JPGQuality = 75;

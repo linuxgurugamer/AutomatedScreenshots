@@ -43,6 +43,7 @@ namespace AutomatedScreenshots
 		private static bool newScreenshotOnSceneChange;
 		private static bool newUseBlizzyToolbar;
 		private static bool newOnSpecialEvent;
+		private static bool newHideUIOnScreenshot;
 		private static bool blizzyToolbarInstalled = false;
 		private static bool appLaucherHidden = true;
 		private static string newKeycode = "";
@@ -161,6 +162,7 @@ namespace AutomatedScreenshots
 				interval = newInterval.ToString ();
 				newConvertToJPG = AS.configuration.convertToJPG;
 				newKeepOrginalPNG = AS.configuration.keepOrginalPNG;
+				newHideUIOnScreenshot = AS.configuration.hideUIOnScreenshot;
 				newScreenshotPath = AS.configuration.screenshotPath;
 				newFilename = AS.configuration.filename;
 				newJPGQuality = AS.configuration.JPGQuality;
@@ -234,6 +236,12 @@ namespace AutomatedScreenshots
 			GUILayout.EndHorizontal ();
 
 
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Hide UI on screenshot:");
+			newHideUIOnScreenshot = GUILayout.Toggle (newHideUIOnScreenshot, "");
+			GUILayout.EndHorizontal ();
+
+
 // Following #pragma disables the warning about unused variable
 #pragma warning disable 168
 			try {
@@ -286,6 +294,7 @@ namespace AutomatedScreenshots
 			AS.configuration.useBlizzyToolbar = newUseBlizzyToolbar;
 			AS.configuration.onSpecialEvent = newOnSpecialEvent;
 			AS.configuration.keycode = newKeycode;
+			AS.configuration.hideUIOnScreenshot = newHideUIOnScreenshot;
 		}
 
 		public void GUIToggle ()

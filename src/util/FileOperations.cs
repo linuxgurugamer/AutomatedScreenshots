@@ -66,6 +66,7 @@ namespace AutomatedScreenshots
 			configFileNode.SetValue ("useBlizzyToolbar", configuration.useBlizzyToolbar.ToString (), true);
 			configFileNode.SetValue ("onSpecialEvent", configuration.onSpecialEvent.ToString (), true);
 			configFileNode.SetValue ("keycode", configuration.keycode.ToString (), true);
+			configFileNode.SetValue ("hideUIOnScreenshot", configuration.hideUIOnScreenshot.ToString (), true);
 		
 			configuration.keycode = AS.setActiveKeycode (configuration.keycode.ToString ()).ToString ();
 			configFile.Save (AS_CFG_FILE);
@@ -124,6 +125,7 @@ namespace AutomatedScreenshots
 					if (configuration.keycode == null)
 						configuration.keycode = "F6";
 					configuration.keycode = AS.setActiveKeycode (configuration.keycode.ToString ()).ToString ();
+					configuration.hideUIOnScreenshot = bool.Parse (SafeLoad(configFileNode.GetValue ("hideUIOnScreenshot"),configuration.hideUIOnScreenshot));
 				}
 			}
 		}

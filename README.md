@@ -8,6 +8,8 @@ The following are the ways that screenshots can be taken:
 1.  The intervals can be specified by time in seconds between each screenshot
 2.  Screenshots can be taken at each scene change
 3.  Screenshots can be taken at special events.
+4.  The UI can be hidden during the screenshots.  Be aware that this will be visible, the UI will flicker
+    off and then on during the screenshot.
 
 The screenshots are saved as PNG files.  PNG files can be big, so you can
 also specify that the PNG files be converted to JPG files, and optionally

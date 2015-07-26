@@ -212,3 +212,9 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+
+#
+# Vim files
+#
+*~
+*.swp

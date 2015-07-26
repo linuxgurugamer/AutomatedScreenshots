@@ -20,7 +20,7 @@
     <ConsolePause>false</ConsolePause>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xcopy ${TargetFile}  R:\KSP_1.0.4_Dev\GameData\SpaceTux\AS\Plugins\  /Y" externalConsole="True" pauseExternalConsole="True" />
+        <Command type="AfterBuild" command="xcopy ${TargetFile}  R:\KSP_1.0.4_Dev\GameData\SpaceTux\AS\Plugins\  /Y" externalConsole="True" />
         <Command type="AfterBuild" command="xcopy ${ProjectDir}\src\Textures\*  R:\KSP_1.0.4_Dev\GameData\SpaceTux\AS\Textures /Y" />
       </CustomCommands>
     </CustomCommands>

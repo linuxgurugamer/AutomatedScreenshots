@@ -25,6 +25,9 @@ namespace AutomatedScreenshots
 		private bool sceneReady = false;
 		private float lastSceneUpdate = 0.0f;
 		private string pngToConvert = "";
+		private string jpgName = "";
+		private bool screenshotTaken = false;
+		private string screenshotFile = "";
 		public static bool changeCallbacks;
 		public static Configuration configuration = new Configuration ();
 		public static KeyCode activeKeycode;
@@ -143,14 +146,16 @@ namespace AutomatedScreenshots
 		public void LateUpdate ()
 		{
 			string pngName;
-			string jpgName;
+
 			//		Log.Info ("LateUpdate");
 			if (doSnapshots) {
+				if (screenshotTaken && configuration.hideUIOnScreenshot && System.IO.File.Exists (screenshotFile))
+					GameEvents.onShowUI.Fire();
 				// If there is a png file waiting to be converted, then don't do another screenshot
 				if (pngToConvert != "") {
 					Log.Info ("pngToConvert: " + pngToConvert);
 					if (System.IO.File.Exists (pngToConvert)) {
-						jpgName = FileOperations.ScreenshotFolder () + configuration.filename + cnt.ToString () + ".jpg";
+						//jpgName = FileOperations.ScreenshotFolder () + configuration.filename + cnt.ToString () + ".jpg";
 						Log.Info ("Converting screenshot to JPG. New name: " + jpgName);
 						ConvertToJPG (pngToConvert, jpgName, configuration.JPGQuality);
 						System.IO.FileInfo file = new System.IO.FileInfo (pngToConvert);
@@ -158,13 +163,6 @@ namespace AutomatedScreenshots
 							Log.Info ("AutomatedScreenshots: Delete PNG file");
 							file.Delete ();
 						}
-						//						else
-						//						{
-						//							string finalPngName = finalName.Replace(".jpg", ".png");
-						//							file.MoveTo(ssfolder + finalPngName);
-						//							ScreenShotsFolder.Add(pngName);
-						//						}
-
 						pngToConvert = "";
 					}
 				} else {
@@ -188,14 +186,18 @@ namespace AutomatedScreenshots
 						do {
 							cnt++;
 							string s = AddInfo(configuration.filename, cnt);
-							//pngName = FileOperations.ScreenshotFolder () + configuration.filename + cnt.ToString () + ".png";
-							//jpgName = FileOperations.ScreenshotFolder () + configuration.filename + cnt.ToString () + ".jpg";
+
 							pngName = configuration.screenshotPath + s + ".png";
 							jpgName = configuration.screenshotPath + s + ".jpg";
 						} while (System.IO.File.Exists (pngName) || System.IO.File.Exists (jpgName));
 							
 						Log.Info ("Update: Screenshotfolder:" + pngName);
+						if (configuration.hideUIOnScreenshot)
+							GameEvents.onHideUI.Fire();
+						screenshotTaken = true;
+						screenshotFile = pngName;
 						Application.CaptureScreenshot (pngName);
+
 						if (configuration.convertToJPG) {
 							pngToConvert = pngName;
 						}
@@ -462,9 +464,12 @@ namespace AutomatedScreenshots
 		public string AddInfo(string original, int cnt)
 		{
 			string f = original;
+			Log.Info ("AddInfo: original: " + original);
 			if (f.Contains ("[cnt]")) {
+				Log.Info ("Contains [cnt]");
 				f = f.Replace ("[cnt]", cnt.ToString ());
-			}
+			} else
+				Log.Info ("Doesn't contain [cnt]");
 
 			if (f.Contains("[date]"))
 			{
@@ -549,7 +554,8 @@ namespace AutomatedScreenshots
 			}
 			// In case they don't have anything there
 			if (f == original) {
-				f = f = cnt.ToString ();
+				Log.Info ("f == original");
+				f = f + cnt.ToString ();
 			}
 			return f;
 		}
