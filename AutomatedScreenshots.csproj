@@ -20,8 +20,8 @@
     <ConsolePause>false</ConsolePause>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xcopy ${TargetFile}  R:\KSP_1.0.4_Dev\GameData\SpaceTux\AS\Plugins\  /Y" externalConsole="True" />
-        <Command type="AfterBuild" command="xcopy ${ProjectDir}\src\Textures\*  R:\KSP_1.0.4_Dev\GameData\SpaceTux\AS\Textures /Y" />
+        <Command type="AfterBuild" command="xcopy ${TargetFile}  R:\KSP_1.0.4_Dev\GameData\AutomatedScreenShots\Plugins\  /Y" externalConsole="True" />
+        <Command type="AfterBuild" command="xcopy ${ProjectDir}\src\Textures\*  R:\KSP_1.0.4_Dev\GameData\AutomatedScreenShots\Textures /Y" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -32,6 +32,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="xcopy ${TargetFile}  R:\KSP_1.0.4_Dev\GameData\AutomatedScreenShots\Plugins\  /Y" externalConsole="True" />
+        <Command type="AfterBuild" command="xcopy ${ProjectDir}\src\Textures\*  R:\KSP_1.0.4_Dev\GameData\Textures /Y" />
+        <Command type="AfterBuild" command="buildRelease.bat" externalConsole="True" pauseExternalConsole="True" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -55,6 +62,7 @@
     <Compile Include="src\gui\ASInfoDisplay.cs" />
     <Compile Include="src\SharedStuff\ToolbarWrapper.cs" />
     <Compile Include="src\AS_ToolbarButtons.cs" />
+    <Compile Include="src\util\UIClass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -73,5 +81,9 @@
     <None Include="src\Textures\AS_38_white.png" />
     <None Include="src\Textures\E8c6GAzTE.jpg" />
     <None Include="src\Textures\E8c6GAzTE.png" />
+    <None Include="automatedscreenshots.version" />
+    <None Include="README.md" />
+    <None Include="buildRelease.bat" />
+    <None Include="src\ChangeLog.txt" />
   </ItemGroup>
 </Project>

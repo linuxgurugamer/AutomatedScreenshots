@@ -10,6 +10,8 @@ The following are the ways that screenshots can be taken:
 3.  Screenshots can be taken at special events.
 4.  The UI can be hidden during the screenshots.  Be aware that this will be visible, the UI will flicker
     off and then on during the screenshot.
+5.  If options to both show and hide the UI are specified, then two screenshots will be taken, one with and one without the UI
+6.  Pre crash/landing detection is added, so if specified, then faster screenshots will be taken just before crashes
 
 The screenshots are saved as PNG files.  PNG files can be big, so you can
 also specify that the PNG files be converted to JPG files, and optionally
@@ -31,6 +33,13 @@ The following are the "variables" available in file names:
 [hour] = in-game hour
 [min] = in-game minute
 [sec] = in-game seconds
+[evt] = event flag
+
+Event Flag
+
+If a screenshot by time interval: time
+If by scene change: scene
+If by special event: event
 
 An example (ridiculous) possible filename is: 
 AS_[date]_[save]_[vessel]_[body]_[biome]_[situation]_Y[year]_D[day]_H[hour]_M[min]_S[sec]_UT[UT] 

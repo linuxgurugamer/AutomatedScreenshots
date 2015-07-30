@@ -17,7 +17,7 @@ namespace AutomatedScreenshots
 	{
 		public static readonly String ROOT_PATH = KSPUtil.ApplicationRootPath;
 		private static readonly String CONFIG_BASE_FOLDER = ROOT_PATH + "GameData/";
-		private static String AS_BASE_FOLDER = CONFIG_BASE_FOLDER + "SpaceTux/AS/";
+		private static String AS_BASE_FOLDER = CONFIG_BASE_FOLDER + "AutomatedScreenshots/";
 		private static String AS_NODENAME = "AutomatedScreenshots";
 		private static String AS_CFG_FILE = AS_BASE_FOLDER + "AS_Settings.cfg";
 
@@ -66,8 +66,15 @@ namespace AutomatedScreenshots
 			configFileNode.SetValue ("useBlizzyToolbar", configuration.useBlizzyToolbar.ToString (), true);
 			configFileNode.SetValue ("onSpecialEvent", configuration.onSpecialEvent.ToString (), true);
 			configFileNode.SetValue ("keycode", configuration.keycode.ToString (), true);
-			configFileNode.SetValue ("hideUIOnScreenshot", configuration.hideUIOnScreenshot.ToString (), true);
+			configFileNode.SetValue ("noGUIOnScreenshot", configuration.noGUIOnScreenshot.ToString (), true);
+			configFileNode.SetValue ("guiOnScreenshot", configuration.guiOnScreenshot.ToString (), true);
 		
+			configFileNode.SetValue ("precrashSnapshots", configuration.precrashSnapshots.ToString (), true);
+			configFileNode.SetValue ("secondsUntilImpact", configuration.secondsUntilImpact.ToString (), true);
+			configFileNode.SetValue ("hsAltitudeLimit", configuration.hsAltitudeLimit.ToString (), true);
+			configFileNode.SetValue ("hsMinVerticalSpeed", configuration.hsMinVerticalSpeed.ToString (), true);
+			configFileNode.SetValue ("hsScreenshotInterval", configuration.hsScreenshotInterval.ToString (), true);
+
 			configuration.keycode = AS.setActiveKeycode (configuration.keycode.ToString ()).ToString ();
 			configFile.Save (AS_CFG_FILE);
 		}
@@ -99,7 +106,7 @@ namespace AutomatedScreenshots
 			configFile = ConfigNode.Load (AS_CFG_FILE);
 	
 			if (configFile != null) {
-				Log.Info ("configFile loaded,file: " + AS_CFG_FILE);
+				//Log.Info ("configFile loaded,file: " + AS_CFG_FILE);
 				configFileNode = configFile.GetNode (AS_NODENAME);
 				if (configFileNode != null) {
 					
@@ -125,7 +132,17 @@ namespace AutomatedScreenshots
 					if (configuration.keycode == null)
 						configuration.keycode = "F6";
 					configuration.keycode = AS.setActiveKeycode (configuration.keycode.ToString ()).ToString ();
-					configuration.hideUIOnScreenshot = bool.Parse (SafeLoad(configFileNode.GetValue ("hideUIOnScreenshot"),configuration.hideUIOnScreenshot));
+					configuration.noGUIOnScreenshot = bool.Parse(SafeLoad(configFileNode.GetValue ("noGUIOnScreenshot"),configuration.noGUIOnScreenshot));
+					configuration.guiOnScreenshot = bool.Parse(SafeLoad(configFileNode.GetValue ("guiOnScreenshot"),configuration.guiOnScreenshot));
+
+					configuration.precrashSnapshots = bool.Parse (SafeLoad(configFileNode.GetValue ("precrashSnapshots"),configuration.precrashSnapshots));
+					configuration.secondsUntilImpact = ushort.Parse (SafeLoad(configFileNode.GetValue ("secondsUntilImpact"),configuration.secondsUntilImpact));
+					configuration.hsAltitudeLimit = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsAltitudeLimit"),configuration.hsAltitudeLimit));
+					configuration.hsMinVerticalSpeed = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsMinVerticalSpeed"),configuration.hsMinVerticalSpeed));
+					configuration.hsScreenshotInterval = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsScreenshotInterval"),configuration.hsScreenshotInterval));
+
+
+
 				}
 			}
 		}

@@ -8,6 +8,7 @@ using UnityEngine;
 using System.IO;
 
 
+
 namespace AutomatedScreenshots
 {
 	public class MainMenuGui : MonoBehaviour
@@ -43,10 +44,21 @@ namespace AutomatedScreenshots
 		private static bool newScreenshotOnSceneChange;
 		private static bool newUseBlizzyToolbar;
 		private static bool newOnSpecialEvent;
-		private static bool newHideUIOnScreenshot;
+		private static bool newNoGUIOnScreenshot;
+		private static bool newGUIOnScreenshot;
+		private static bool newprecrashSnapshots;
 		private static bool blizzyToolbarInstalled = false;
 		private static bool appLaucherHidden = true;
 		private static string newKeycode = "";
+		private static ushort newsecondsUntilImpact;
+		private static ushort newhsAltitudeLimit;
+		private static ushort newhsMinVerticalSpeed;
+		private static ushort newhsScreenshotInterval;
+		private static string secondsUntilImpact = "";
+		private static string hsAltitudeLimit = "";
+		private static string hsMinVerticalSpeed = "";
+		private static string hsScreenshotInterval = "";
+
 
 		internal MainMenuGui ()
 		{
@@ -77,10 +89,12 @@ namespace AutomatedScreenshots
 		public void OnGUIShowApplicationLauncher ()
 		{
 			//Log.Info ("OnGUIShowApplicationLauncher");
+
 			if (!AS.configuration.BlizzyToolbarIsAvailable || !AS.configuration.useBlizzyToolbar) {
 				if (appLaucherHidden) {
 					appLaucherHidden = false;
-					UpdateToolbarStock ();
+					if (AS_Button != null)
+						UpdateToolbarStock ();
 				}
 			}
 		}
@@ -97,25 +111,25 @@ namespace AutomatedScreenshots
 				Log.Info ("AS_Button not null");
 			// Create the button in the KSP AppLauncher
 			if (!AS_Texture_Load) {
-				if (GameDatabase.Instance.ExistsTexture ("SpaceTux/AS/Textures/AS_38"))
-					AS_button_on = GameDatabase.Instance.GetTexture ("SpaceTux/AS/Textures/AS_38", false);
-				if (GameDatabase.Instance.ExistsTexture ("SpaceTux/AS/Textures/AS_38_white"))
-					AS_button_off = GameDatabase.Instance.GetTexture ("SpaceTux/AS/Textures/AS_38_white", false);
-				if (GameDatabase.Instance.ExistsTexture ("SpaceTux/AS/Textures/AS_38_green"))
-					AS_button_alert = GameDatabase.Instance.GetTexture ("SpaceTux/AS/Textures/AS_38_green", false);
+				if (GameDatabase.Instance.ExistsTexture ("AutomatedScreenShots/Textures/AS_38"))
+					AS_button_on = GameDatabase.Instance.GetTexture ("AutomatedScreenShots/Textures/AS_38", false);
+				if (GameDatabase.Instance.ExistsTexture ("AutomatedScreenShots/Textures/AS_38_white"))
+					AS_button_off = GameDatabase.Instance.GetTexture ("AutomatedScreenShots/Textures/AS_38_white", false);
+				if (GameDatabase.Instance.ExistsTexture ("AutomatedScreenShots/Textures/AS_38_green"))
+					AS_button_alert = GameDatabase.Instance.GetTexture ("AutomatedScreenShots/Textures/AS_38_green", false);
 
 				AS_Texture_Load = true;
 			}
 			if (AS_Button == null && !appLaucherHidden) {
 				Log.Info ("AS_Button == null");
-
+				
 				AS_Button = ApplicationLauncher.Instance.AddModApplication (GUIToggle, GUIToggle,
 					null, null,
 					null, null,
 					ApplicationLauncher.AppScenes.ALWAYS,
 						//ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH,
 					AS_button_off);
-
+				Log.Info ("Added");
 				stockToolBarcreated = true;
 			}
 		}
@@ -162,7 +176,9 @@ namespace AutomatedScreenshots
 				interval = newInterval.ToString ();
 				newConvertToJPG = AS.configuration.convertToJPG;
 				newKeepOrginalPNG = AS.configuration.keepOrginalPNG;
-				newHideUIOnScreenshot = AS.configuration.hideUIOnScreenshot;
+				newNoGUIOnScreenshot = AS.configuration.noGUIOnScreenshot;
+				newGUIOnScreenshot = AS.configuration.guiOnScreenshot;
+					
 				newScreenshotPath = AS.configuration.screenshotPath;
 				newFilename = AS.configuration.filename;
 				newJPGQuality = AS.configuration.JPGQuality;
@@ -171,6 +187,18 @@ namespace AutomatedScreenshots
 				newUseBlizzyToolbar = AS.configuration.useBlizzyToolbar;
 				newOnSpecialEvent = AS.configuration.onSpecialEvent;
 				newKeycode = AS.configuration.keycode;
+
+				newprecrashSnapshots = AS.configuration.precrashSnapshots;
+				newsecondsUntilImpact = AS.configuration.secondsUntilImpact;
+				newhsAltitudeLimit = AS.configuration.hsAltitudeLimit;
+				newhsMinVerticalSpeed = AS.configuration.hsMinVerticalSpeed;
+				newhsScreenshotInterval = AS.configuration.hsScreenshotInterval;
+
+				secondsUntilImpact = AS.configuration.secondsUntilImpact.ToString();
+				hsAltitudeLimit = AS.configuration.hsAltitudeLimit.ToString();
+				hsMinVerticalSpeed = AS.configuration.hsMinVerticalSpeed.ToString();
+				hsScreenshotInterval = AS.configuration.hsScreenshotInterval.ToString();
+
 			} 
 
 			SetVisible (true);
@@ -235,11 +263,41 @@ namespace AutomatedScreenshots
 			newKeycode = GUILayout.TextField (newKeycode, GUILayout.MinWidth (30F), GUILayout.MaxWidth (40F));
 			GUILayout.EndHorizontal ();
 
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("No GUI on screenshot:");
+			newNoGUIOnScreenshot = GUILayout.Toggle (newNoGUIOnScreenshot, "");
+			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label ("Hide UI on screenshot:");
-			newHideUIOnScreenshot = GUILayout.Toggle (newHideUIOnScreenshot, "");
+			GUILayout.Label ("GUI on screenshot:");
+			newGUIOnScreenshot = GUILayout.Toggle (newGUIOnScreenshot, "");
 			GUILayout.EndHorizontal ();
+
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Take pre-crash snapshots:");
+			newprecrashSnapshots = GUILayout.Toggle (newprecrashSnapshots, "");
+			GUILayout.EndHorizontal ();
+
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Seconds until impact:");
+			secondsUntilImpact = GUILayout.TextField (secondsUntilImpact, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
+			GUILayout.EndHorizontal ();
+
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Altitude limit:");
+			hsAltitudeLimit = GUILayout.TextField (hsAltitudeLimit, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
+			GUILayout.EndHorizontal ();
+
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Minimum vertical speed:");
+			hsMinVerticalSpeed = GUILayout.TextField (hsMinVerticalSpeed, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
+			GUILayout.EndHorizontal ();
+
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Screenshot interval (pre-crash):");
+			hsScreenshotInterval = GUILayout.TextField (hsScreenshotInterval, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
+			GUILayout.EndHorizontal ();
+
 
 
 // Following #pragma disables the warning about unused variable
@@ -259,6 +317,41 @@ namespace AutomatedScreenshots
 			} finally {
 				// AS.configuration.screenshotInterval =  newInterval;
 			}
+
+
+			try {
+				newsecondsUntilImpact = Convert.ToUInt16 (secondsUntilImpact);
+			} catch (FormatException e) {
+			} catch (OverflowException e) {
+			} finally {
+				// AS.configuration.screenshotInterval =  newInterval;
+			}
+			try {
+				newhsAltitudeLimit = Convert.ToUInt16 (hsAltitudeLimit);
+			} catch (FormatException e) {
+			} catch (OverflowException e) {
+			} finally {
+				// AS.configuration.screenshotInterval =  newInterval;
+			}
+			try {
+				newhsMinVerticalSpeed = Convert.ToUInt16 (hsMinVerticalSpeed);
+			} catch (FormatException e) {
+			} catch (OverflowException e) {
+			} finally {
+				// AS.configuration.screenshotInterval =  newInterval;
+			}
+			try {
+				newhsScreenshotInterval = Convert.ToUInt16 (hsScreenshotInterval);
+			} catch (FormatException e) {
+			} catch (OverflowException e) {
+			} finally {
+				// AS.configuration.screenshotInterval =  newInterval;
+			}
+
+
+
+
+
 #pragma warning restore 168
 
 			GUILayout.EndVertical ();
@@ -287,6 +380,7 @@ namespace AutomatedScreenshots
 			AS.configuration.screenshotPath = newScreenshotPath;
 			if (!(newFilename.Contains ("/") || newFilename.Contains ("\\")))
 				AS.configuration.filename = newFilename;
+
 			AS.configuration.JPGQuality = newJPGQuality;
 			if (AS.configuration.JPGQuality < 1 || AS.configuration.JPGQuality > 100)
 				AS.configuration.JPGQuality = 75;
@@ -294,7 +388,15 @@ namespace AutomatedScreenshots
 			AS.configuration.useBlizzyToolbar = newUseBlizzyToolbar;
 			AS.configuration.onSpecialEvent = newOnSpecialEvent;
 			AS.configuration.keycode = newKeycode;
-			AS.configuration.hideUIOnScreenshot = newHideUIOnScreenshot;
+			AS.configuration.noGUIOnScreenshot = newNoGUIOnScreenshot;
+			AS.configuration.guiOnScreenshot = newGUIOnScreenshot;
+
+			AS.configuration.precrashSnapshots = newprecrashSnapshots;
+			AS.configuration.secondsUntilImpact = newsecondsUntilImpact;
+			AS.configuration.hsAltitudeLimit = newhsAltitudeLimit;
+			AS.configuration.hsMinVerticalSpeed = newhsMinVerticalSpeed;
+			AS.configuration.hsScreenshotInterval = newhsScreenshotInterval;
+
 		}
 
 		public void GUIToggle ()

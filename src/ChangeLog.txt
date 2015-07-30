@@ -1,0 +1,6 @@
+﻿0.1.0		initial release
+
+0.2.0		Added pre crash/landing detection 
+			Added ability to take screenshots both with and without UI
+			Bug fixed where if you had the UI hidden, it would be enabled after a screenshot
+			Fixed missing toolbar icons

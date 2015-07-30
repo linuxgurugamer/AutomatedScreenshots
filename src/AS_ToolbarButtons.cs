@@ -29,7 +29,7 @@ namespace AutomatedScreenshots
 				gui.GUI_SaveData ();
 
 				if (AS.configuration.BlizzyToolbarIsAvailable && AS.configuration.useBlizzyToolbar) {
-					btnReturn.TexturePath = "SpaceTux/AS/Textures/AS_24_white";
+					btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24_white";
 					gui.OnGUIHideApplicationLauncher ();
 					//InitToolbarButton ();
 				} else {
@@ -52,16 +52,16 @@ namespace AutomatedScreenshots
 				gui.SetVisible (true);
 				GUI.enabled = true;
 				btnReturn.ToolTip = _tooltipOn;
-				btnReturn.TexturePath = "SpaceTux/AS/Textures/AS_24";
+				btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24";
 			}
 		}
 
 		public static void  ToolBarActive(bool active)
 		{
 			if (active)
-				btnReturn.TexturePath = "SpaceTux/AS/Textures/AS_24_green";
+				btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24_green";
 			else
-				btnReturn.TexturePath = "SpaceTux/AS/Textures/AS_24_white";
+				btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24_white";
 		}
         /// <summary>
         /// initialises a Toolbar Button for this mod

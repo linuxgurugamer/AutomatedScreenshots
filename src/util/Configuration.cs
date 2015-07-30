@@ -26,8 +26,15 @@ namespace AutomatedScreenshots
 		public bool screenshotOnSceneChange { get; set; }
 		public bool onSpecialEvent { get; set; }
 		public bool useBlizzyToolbar { get; set; }
-		public bool hideUIOnScreenshot { get; set; }
+		public bool noGUIOnScreenshot { get; set; }
+		public bool guiOnScreenshot { get; set; }
 		public string keycode { get; set; }
+
+		public bool precrashSnapshots { get; set; }
+		public ushort secondsUntilImpact {get; set; }
+		public ushort hsAltitudeLimit { get; set; }
+		public ushort hsMinVerticalSpeed { get; set; }
+		public ushort hsScreenshotInterval { get; set; }
 
 		internal Boolean BlizzyToolbarIsAvailable = false;
 
@@ -41,7 +48,8 @@ namespace AutomatedScreenshots
 			convertToJPG = true;
 			keepOrginalPNG = false;
 			screenshotPath = FileOperations.ROOT_PATH + "Screenshots/";
-			hideUIOnScreenshot = false;
+			noGUIOnScreenshot = false;
+			guiOnScreenshot = true;
 			filename = "AS-[cnt]";
 			asynchronous = false;
 			JPGQuality = 75;
@@ -49,6 +57,12 @@ namespace AutomatedScreenshots
 			onSpecialEvent = false;
 			useBlizzyToolbar = false;
 			keycode = "F6";
+
+			precrashSnapshots = false;
+			secondsUntilImpact = 5;
+			hsAltitudeLimit = 25;
+			hsMinVerticalSpeed = 3;
+			hsScreenshotInterval = 1;
 		}
 
 		public static Configuration Instance {

@@ -11,18 +11,29 @@ using KSP.IO;
 
 namespace AutomatedScreenshots
 {
+	public enum UIOnScreenshot : ushort
+	{
+		show = 0,
+		hide,
+		both};
+	
 	[KSPAddon (KSPAddon.Startup.MainMenu, true)]
 	public partial class AS : MonoBehaviour
 	{
+
+		
 		//			public Configuration configuration = Configuration.Instance;
 		//			public static AS Instance { get; private set;}
 		private float lastUpdate = 0.0f;
+		private float lastPrecrashUpdate = 0.0f;
 		private int cnt = 0;
-//		private float snapshotInterval = 5.0f;
+		//		private float snapshotInterval = 5.0f;
 		static bool doSnapshots = false;
 		private bool specialScene = false;
+		private bool precrash = false;
 		private bool newScene = false;
 		private bool sceneReady = false;
+
 		private float lastSceneUpdate = 0.0f;
 		private string pngToConvert = "";
 		private string jpgName = "";
@@ -31,6 +42,12 @@ namespace AutomatedScreenshots
 		public static bool changeCallbacks;
 		public static Configuration configuration = new Configuration ();
 		public static KeyCode activeKeycode;
+
+		static private UICLASS uiVisiblity;
+//		private bool uiVisible = true;
+		private bool wasUIVisible = true;
+//		private static KeyCode toggleUIKeycode = KeyCode.F2;
+		private ushort dualScreenshots = 0;
 
 		public MainMenuGui gui = null;
 
@@ -53,6 +70,8 @@ namespace AutomatedScreenshots
 		public void Awake ()
 		{
 			Log.Info ("Awake");
+			uiVisiblity = new UICLASS();
+			uiVisiblity.Awake ();
 		}
 
 		public void Start ()
@@ -69,9 +88,9 @@ namespace AutomatedScreenshots
 			if (configuration.BlizzyToolbarIsAvailable) {
 				InitToolbarButton ();
 				if (configuration.useBlizzyToolbar) {
-					setToolbarButtonVisibility(true);
+					setToolbarButtonVisibility (true);
 				} else {
-					setToolbarButtonVisibility(false);
+					setToolbarButtonVisibility (false);
 				}
 			}
 
@@ -85,10 +104,10 @@ namespace AutomatedScreenshots
 				// 	this.gui.OnGUIApplicationLauncherReady ();
 				this.gui.SetVisible (false);
 				RegisterEvents ();
-				gui.OnGUIApplicationLauncherReady ();
+				//gui.OnGUIApplicationLauncherReady ();
 #if (STOCKTOOLBAR)
 				{
-					GameEvents.onGUIApplicationLauncherReady.Add (gui.OnGUIApplicationLauncherReady);
+					//	GameEvents.onGUIApplicationLauncherReady.Add (gui.OnGUIApplicationLauncherReady);
 				}
 #endif
 			}
@@ -102,13 +121,12 @@ namespace AutomatedScreenshots
 #endif
 			} else {
 #if (STOCKTOOLBAR)
-				if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar)
-				{					
-					GameEvents.onGUIApplicationLauncherReady.Add (gui.OnGUIApplicationLauncherReady);
+				if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {
+					if (MainMenuGui.AS_Button == null)
+						GameEvents.onGUIApplicationLauncherReady.Add (gui.OnGUIApplicationLauncherReady);
 					gui.OnGUIShowApplicationLauncher ();
-				}
-				else{
-					setToolbarButtonVisibility(true);
+				} else {
+					setToolbarButtonVisibility (true);
 				}
 #endif
 			}
@@ -118,10 +136,13 @@ namespace AutomatedScreenshots
 				RegisterEvents ();
 			}
 
+			//if (Input.GetKeyDown (toggleUIKeycode))
+			//	uiVisible = !uiVisible;
+			//Log.Info("isUIVisible: " + uiVisiblity.isVisible().ToString());
 			if (Input.GetKeyDown (activeKeycode)) {
 				Log.Info ("Update:     GameScene: " + HighLogic.LoadedScene.ToString ());
 				if (HighLogic.LoadedScene != GameScenes.MAINMENU) {
-					Log.Info ("KeyCode: " + activeKeycode.ToString() + " pressed");
+					Log.Info ("KeyCode: " + activeKeycode.ToString () + " pressed");
 					if (!doSnapshots) {
 						if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {					
 							MainMenuGui.AS_Button.SetTexture (MainMenuGui.AS_button_alert);
@@ -149,13 +170,13 @@ namespace AutomatedScreenshots
 
 			//		Log.Info ("LateUpdate");
 			if (doSnapshots) {
-				if (screenshotTaken && configuration.hideUIOnScreenshot && System.IO.File.Exists (screenshotFile))
-					GameEvents.onShowUI.Fire();
+//				guiVisible = gui.Visible ();
+				if (screenshotTaken && configuration.noGUIOnScreenshot == true && System.IO.File.Exists (screenshotFile) && wasUIVisible)
+					GameEvents.onShowUI.Fire ();
 				// If there is a png file waiting to be converted, then don't do another screenshot
 				if (pngToConvert != "") {
-					Log.Info ("pngToConvert: " + pngToConvert);
+					//Log.Info ("pngToConvert: " + pngToConvert);
 					if (System.IO.File.Exists (pngToConvert)) {
-						//jpgName = FileOperations.ScreenshotFolder () + configuration.filename + cnt.ToString () + ".jpg";
 						Log.Info ("Converting screenshot to JPG. New name: " + jpgName);
 						ConvertToJPG (pngToConvert, jpgName, configuration.JPGQuality);
 						System.IO.FileInfo file = new System.IO.FileInfo (pngToConvert);
@@ -166,12 +187,32 @@ namespace AutomatedScreenshots
 						pngToConvert = "";
 					}
 				} else {
-					if ( this.specialScene || 
-						(AS.configuration.screenshotAtIntervals && 
-							((this.newScene && this.sceneReady && Time.time - lastSceneUpdate > 1) || 
-								(Time.time - lastUpdate > configuration.screenshotInterval)))) {
+					Log.Info("isUIVisible: " + uiVisiblity.isVisible().ToString());
+				//	Log.Info ("uiVisible: " + uiVisible.ToString ());
+					if (AS.configuration.precrashSnapshots) {
+						Vessel vessel = FlightGlobals.ActiveVessel;
+						if ((-vessel.verticalSpeed > AS.configuration.hsMinVerticalSpeed) &&
+						    ((vessel.GetHeightFromTerrain () / -vessel.verticalSpeed < AS.configuration.secondsUntilImpact) ||
+						    (vessel.GetHeightFromTerrain () < AS.configuration.hsAltitudeLimit)
+						    )) {
+
+							if (Time.time - lastPrecrashUpdate > configuration.hsScreenshotInterval) {
+								this.precrash = true;
+								lastPrecrashUpdate = Time.time;
+								//Log.Info ("vessel.verticalSpeed: " + vessel.verticalSpeed.ToString ());
+								//Log.Info ("vessel.GetHeightFromTerrain: " + vessel.GetHeightFromTerrain ().ToString ());
+								//Log.Info ("vessel.GetHeightFromTerrain () / -vessel.verticalSpeed: " + (vessel.GetHeightFromTerrain () / -vessel.verticalSpeed).ToString ());
+							}
+						}
+					}
+
+					if (this.specialScene || this.precrash || dualScreenshots == 1 ||
+					    (AS.configuration.screenshotAtIntervals &&
+					    ((this.newScene && this.sceneReady && Time.time - lastSceneUpdate > 1) ||
+					    (Time.time - lastUpdate > configuration.screenshotInterval)))) {
 						newScene = false;
 						this.specialScene = false;
+
 						lastUpdate = Time.time;
 						//check if directory doesn't exist
 						if (!System.IO.Directory.Exists (FileOperations.ScreenshotFolder ())) {    
@@ -185,15 +226,28 @@ namespace AutomatedScreenshots
 						}
 						do {
 							cnt++;
-							string s = AddInfo(configuration.filename, cnt);
+							string s = AddInfo (configuration.filename, cnt);
 
 							pngName = configuration.screenshotPath + s + ".png";
 							jpgName = configuration.screenshotPath + s + ".jpg";
 						} while (System.IO.File.Exists (pngName) || System.IO.File.Exists (jpgName));
-							
+
+						this.precrash = false;
+
+						// I make the assumption that if the player wants the gui during the screenshot, then 
+						// it will be left visible.
+						wasUIVisible = uiVisiblity.isVisible() | configuration.guiOnScreenshot;
 						Log.Info ("Update: Screenshotfolder:" + pngName);
-						if (configuration.hideUIOnScreenshot)
-							GameEvents.onHideUI.Fire();
+						if (configuration.noGUIOnScreenshot == true)
+							GameEvents.onHideUI.Fire ();
+						if (configuration.noGUIOnScreenshot && configuration.guiOnScreenshot) {
+							if (dualScreenshots == 0)
+								dualScreenshots = 1;
+							else if (dualScreenshots == 1) {
+								dualScreenshots = 0;
+								GameEvents.onShowUI.Fire ();
+							}
+						}
 						screenshotTaken = true;
 						screenshotFile = pngName;
 						Application.CaptureScreenshot (pngName);
@@ -210,6 +264,9 @@ namespace AutomatedScreenshots
 		public void RegisterEvents ()
 		{
 			Log.Info ("RegisterEvents");
+//			GameEvents.onShowUI.Add(this.onShowUI);
+//			GameEvents.onHideUI.Add(this.onHideUI);
+
 			RegisterSceneChanges (false);
 			RegisterSpecialEvents (false);
 			RegisterSceneChanges (AS.configuration.screenshotOnSceneChange);
@@ -423,7 +480,7 @@ namespace AutomatedScreenshots
 			//Resources.UnloadAsset(png);
 		}
 
-		public static KeyCode setActiveKeycode(string keycode)
+		public static KeyCode setActiveKeycode (string keycode)
 		{
 			AS.activeKeycode = (KeyCode)Enum.Parse (typeof(KeyCode), keycode);
 			if (AS.activeKeycode == KeyCode.None) {
@@ -437,31 +494,31 @@ namespace AutomatedScreenshots
 		//
 		// Following taken from SensibleScreenshot
 		//
-		public string ConvertDateString()
+		public string ConvertDateString ()
 		{
 			string dateFormat = "yyyy-MM-dd--HH-mm-ss";
 
-			return DateTime.Now.ToString(dateFormat);
+			return DateTime.Now.ToString (dateFormat);
 		}
 
-		public int[] ConvertUT(double UT)
+		public int[] ConvertUT (double UT)
 		{
 			double time = UT;
-			int[] ret = {0, 0, 0, 0, 0};
-			ret[0] = (int)Math.Floor(time / (KSPUtil.Year))+1; //year
+			int[] ret = { 0, 0, 0, 0, 0 };
+			ret [0] = (int)Math.Floor (time / (KSPUtil.Year)) + 1; //year
 			time %= (KSPUtil.Year);
-			ret[1] = (int)Math.Floor(time / KSPUtil.Day)+1; //days
+			ret [1] = (int)Math.Floor (time / KSPUtil.Day) + 1; //days
 			time %= (KSPUtil.Day);
-			ret[2] = (int)Math.Floor(time / (3600)); //hours
+			ret [2] = (int)Math.Floor (time / (3600)); //hours
 			time %= (3600);
-			ret[3] = (int)Math.Floor(time / (60)); //minutes
+			ret [3] = (int)Math.Floor (time / (60)); //minutes
 			time %= (60);
-			ret[4] = (int)Math.Floor(time); //seconds
+			ret [4] = (int)Math.Floor (time); //seconds
 
 			return ret; 
 		}
 
-		public string AddInfo(string original, int cnt)
+		public string AddInfo (string original, int cnt)
 		{
 			string f = original;
 			Log.Info ("AddInfo: original: " + original);
@@ -471,92 +528,93 @@ namespace AutomatedScreenshots
 			} else
 				Log.Info ("Doesn't contain [cnt]");
 
-			if (f.Contains("[date]"))
-			{
-				f = f.Replace("[date]", ConvertDateString());
+			if (f.Contains ("[date]")) {
+				f = f.Replace ("[date]", ConvertDateString ());
 			}
-			if (f.Contains("[UT]"))
-			{
+			if (f.Contains ("[UT]")) {
 				double UT = 0;
 				if (Planetarium.fetch != null)
-					UT = Planetarium.GetUniversalTime();
-				f = f.Replace("[UT]", Math.Round(UT).ToString());
+					UT = Planetarium.GetUniversalTime ();
+				f = f.Replace ("[UT]", Math.Round (UT).ToString ());
 			}
-			if (f.Contains("[save]"))
-			{
+			if (f.Contains ("[save]")) {
 				string save = "NA";
-				if (HighLogic.SaveFolder != null && HighLogic.SaveFolder.Trim().Length > 0)
+				if (HighLogic.SaveFolder != null && HighLogic.SaveFolder.Trim ().Length > 0)
 					save = HighLogic.SaveFolder;
-				f = f.Replace("[save]", save);
+				f = f.Replace ("[save]", save);
 			}
 			//if (f.Contains("[version]"))
 			//{
 			//	string version = Versioning.GetVersionString();
 			//	f = f.Replace("[version]", version);
 			//}
-			if (f.Contains("[vessel]"))
-			{
+			if (f.Contains ("[vessel]")) {
 				string vessel = "NA";
 				if (HighLogic.LoadedSceneIsFlight && FlightGlobals.ActiveVessel != null)
 					vessel = FlightGlobals.ActiveVessel.vesselName;
-				f = f.Replace("[vessel]", vessel);
+				f = f.Replace ("[vessel]", vessel);
 			}
-			if (f.Contains("[body]"))
-			{
+			if (f.Contains ("[body]")) {
 				string body = "NA";
 				if (Planetarium.fetch != null)
 					body = Planetarium.fetch.CurrentMainBody.bodyName;
-				f = f.Replace("[body]", body);
+				f = f.Replace ("[body]", body);
 			}
-			if (f.Contains("[situation]"))
-			{
+			if (f.Contains ("[situation]")) {
 				string sit = "NA";
-				if (HighLogic.LoadedSceneIsFlight && FlightGlobals.ActiveVessel != null)
-				{
-					sit = FlightGlobals.ActiveVessel.situation.ToString();
+				if (HighLogic.LoadedSceneIsFlight && FlightGlobals.ActiveVessel != null) {
+					sit = FlightGlobals.ActiveVessel.situation.ToString ();
 				}
-				f = f.Replace("[situation]", sit);
+				f = f.Replace ("[situation]", sit);
 			}
-			if (f.Contains("[biome]"))
-			{
+			if (f.Contains ("[biome]")) {
 				string biome = "NA";
 				if (HighLogic.LoadedSceneIsFlight && FlightGlobals.ActiveVessel != null)
-					biome = ScienceUtil.GetExperimentBiome(FlightGlobals.ActiveVessel.mainBody, FlightGlobals.ActiveVessel.latitude, FlightGlobals.ActiveVessel.longitude);
-				f = f.Replace("[biome]", biome);
+					biome = ScienceUtil.GetExperimentBiome (FlightGlobals.ActiveVessel.mainBody, FlightGlobals.ActiveVessel.latitude, FlightGlobals.ActiveVessel.longitude);
+				f = f.Replace ("[biome]", biome);
 			}
 			int[] times = { 0, 0, 0, 0, 0 };
 			if (Planetarium.fetch != null)
-				times = ConvertUT(Planetarium.GetUniversalTime());
-			if (f.Contains("[year]"))
-			{
-				string time = times[0].ToString();
-				f = f.Replace("[year]", time);
+				times = ConvertUT (Planetarium.GetUniversalTime ());
+			if (f.Contains ("[year]")) {
+				string time = times [0].ToString ();
+				f = f.Replace ("[year]", time);
 			}
-			if (f.Contains("[day]"))
-			{
-				string time = times[1].ToString();
-				f = f.Replace("[day]", time);
+			if (f.Contains ("[day]")) {
+				string time = times [1].ToString ();
+				f = f.Replace ("[day]", time);
 			}
-			if (f.Contains("[hour]"))
-			{
-				string time = times[2].ToString();
-				f = f.Replace("[hour]", time);
+			if (f.Contains ("[hour]")) {
+				string time = times [2].ToString ();
+				f = f.Replace ("[hour]", time);
 			}
-			if (f.Contains("[min]"))
-			{
-				string time = times[3].ToString();
-				f = f.Replace("[min]", time);
+			if (f.Contains ("[min]")) {
+				string time = times [3].ToString ();
+				f = f.Replace ("[min]", time);
 			}
-			if (f.Contains("[sec]"))
-			{
-				string time = times[4].ToString();
-				f = f.Replace("[sec]", time);
+			if (f.Contains ("[sec]")) {
+				string time = times [4].ToString ();
+				f = f.Replace ("[sec]", time);
 			}
+
 			// In case they don't have anything there
 			if (f == original) {
 				Log.Info ("f == original");
 				f = f + cnt.ToString ();
 			}
+			if (f.Contains ("[evt]")) {
+				string evt = "timed";
+				if (sceneReady)
+					evt = "scene";
+				if (specialScene)
+					evt = "event";
+				if (precrash)
+					evt = "precrash";
+
+				f = f.Replace ("[evt]", evt);
+			}
+
+
 			return f;
 		}
 	}
