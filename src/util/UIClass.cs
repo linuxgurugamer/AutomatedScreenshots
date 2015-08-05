@@ -24,7 +24,6 @@ namespace AutomatedScreenshots
 		public void Awake ()
 		{
 			Log.Info ("UICLASS Awake");
-			Log.Test ("UICLASS Awake");
 			GameEvents.onShowUI.Add(onShowUI);
 			GameEvents.onHideUI.Add(onHideUI);
 		}
@@ -32,14 +31,12 @@ namespace AutomatedScreenshots
 		private void onShowUI ()
 		{
 			Log.Info ("UICLASS onShowUI");
-			Log.Test ("UICLASS onShowUI");
 			uiVisible = true;
 		}
 
 		private void onHideUI ()
 		{
 			Log.Info ("UICLASS onHideUI");
-			Log.Test ("UICLASS onHideUI");
 			uiVisible = false;
 		}
 

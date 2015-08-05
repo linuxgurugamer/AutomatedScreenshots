@@ -51,6 +51,9 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>bin\Debug\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="Historian">
+      <HintPath>..\..\Historian\Source\bin\Debug\Historian.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +66,7 @@
     <Compile Include="src\SharedStuff\ToolbarWrapper.cs" />
     <Compile Include="src\AS_ToolbarButtons.cs" />
     <Compile Include="src\util\UIClass.cs" />
+    <Compile Include="src\util\Version.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -84,6 +88,6 @@
     <None Include="automatedscreenshots.version" />
     <None Include="README.md" />
     <None Include="buildRelease.bat" />
-    <None Include="src\ChangeLog.txt" />
+    <None Include="ChangeLog.txt" />
   </ItemGroup>
 </Project>

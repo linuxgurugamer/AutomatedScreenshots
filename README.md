@@ -1,5 +1,7 @@
-# AutomatedScreenshots
+# AutomatedScreenshots (AS)
+
 A mod to grab automated screenshots at specific time intervals and special events
+
 
 This mod will take screenshots at specified intervals.
 
@@ -12,6 +14,10 @@ The following are the ways that screenshots can be taken:
     off and then on during the screenshot.
 5.  If options to both show and hide the UI are specified, then two screenshots will be taken, one with and one without the UI
 6.  Pre crash/landing detection is added, so if specified, then faster screenshots will be taken just before crashes
+
+New Feature:
+
+7.  Integration with Historian.  If Historian is loaded and configured, AS will call Historian before each screenshot to activate the ribbon
 
 The screenshots are saved as PNG files.  PNG files can be big, so you can
 also specify that the PNG files be converted to JPG files, and optionally

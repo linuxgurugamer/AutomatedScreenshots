@@ -14,9 +14,8 @@ namespace AutomatedScreenshots
 			WARNING = 2,
 			INFO = 3,
 			DETAIL = 4,
-			TRACE = 5}
-
-		;
+			TRACE = 5
+		};
 
 		public  static LEVEL level = LEVEL.INFO;
 
@@ -69,7 +68,7 @@ namespace AutomatedScreenshots
 				Debug.Log (PREFIX + msg);
 			}
 		}
-
+#if (DEBUG)
 		// for Debugging only; calls should be removed for release
 		public static void Test (String msg)
 		{
@@ -78,6 +77,7 @@ namespace AutomatedScreenshots
 				Debug.LogWarning (PREFIX + "TEST:" + msg);
 			}
 		}
+#endif
 
 		public static void Warning (String msg)
 		{

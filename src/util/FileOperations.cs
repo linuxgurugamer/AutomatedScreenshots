@@ -1,8 +1,6 @@
 ﻿
 // just uncomment this line to restrict file access to KSP installation folder
 #define _UNLIMITED_FILE_ACCESS
-// for debugging
-// #define _DEBUG
 
 using System;
 using System.Collections.Generic;
@@ -31,6 +29,32 @@ namespace AutomatedScreenshots
 			return folder;
 		}
 
+#if (!_UNLIMITED_FILE_ACCESS)
+		public static bool InsideApplicationRootPath(String path)
+		{
+			if (path == null) return false;
+			try
+			{
+				String fullpath = Path.GetFullPath(path);
+				return fullpath.StartsWith(Path.GetFullPath(ROOT_PATH));
+			}
+			catch
+			{
+				return false;
+			}
+		}
+#endif
+		public static bool ValidPathForWriteOperation(String path)
+		{
+#if (_UNLIMITED_FILE_ACCESS)
+			return true;
+#else
+			String fullpath = Path.GetFullPath(path);
+			return InsideApplicationRootPath(fullpath);
+#endif
+		}
+
+
 		public static void SaveConfiguration (Configuration configuration, String file)
 		{
 			if (configFile == null) {
@@ -54,6 +78,8 @@ namespace AutomatedScreenshots
 			}
 				
 			configFileNode.SetValue ("logLevel", ((ushort)configuration.logLevel).ToString (), true);
+			if (!ValidPathForWriteOperation(configuration.screenshotPath))
+				configuration.screenshotPath = FileOperations.ROOT_PATH + "Screenshots/";
 			configFileNode.SetValue ("screenshotPath", configuration.screenshotPath.ToString (), true);
 			configFileNode.SetValue ("filenameFormat", configuration.filename.ToString (), true);
 			configFileNode.SetValue ("screenshotAtIntervals", configuration.screenshotAtIntervals.ToString (), true);
@@ -106,7 +132,6 @@ namespace AutomatedScreenshots
 			configFile = ConfigNode.Load (AS_CFG_FILE);
 	
 			if (configFile != null) {
-				//Log.Info ("configFile loaded,file: " + AS_CFG_FILE);
 				configFileNode = configFile.GetNode (AS_NODENAME);
 				if (configFileNode != null) {
 					
@@ -114,6 +139,8 @@ namespace AutomatedScreenshots
 					configuration.screenshotPath = SafeLoad (configFileNode.GetValue ("screenshotPath"), configuration.screenshotPath);
 					if (configuration.screenshotPath [configuration.screenshotPath.Length - 1] != '/' && configuration.screenshotPath [configuration.screenshotPath.Length - 1] != '\\')
 						configuration.screenshotPath += '/';
+					if (!ValidPathForWriteOperation(configuration.screenshotPath))
+								configuration.screenshotPath = FileOperations.ROOT_PATH + "Screenshots/";
 
 					configuration.filename = SafeLoad (configFileNode.GetValue ("filenameFormat"), configuration.filename);
 					if ((configuration.filename.Contains ("/") || configuration.filename.Contains ("\\")))
@@ -140,9 +167,6 @@ namespace AutomatedScreenshots
 					configuration.hsAltitudeLimit = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsAltitudeLimit"),configuration.hsAltitudeLimit));
 					configuration.hsMinVerticalSpeed = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsMinVerticalSpeed"),configuration.hsMinVerticalSpeed));
 					configuration.hsScreenshotInterval = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsScreenshotInterval"),configuration.hsScreenshotInterval));
-
-
-
 				}
 			}
 		}

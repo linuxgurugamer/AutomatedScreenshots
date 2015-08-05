@@ -40,7 +40,11 @@ namespace AutomatedScreenshots
 
 		public Configuration ()
 		{
+#if (DEBUG)
+			logLevel = Log.LEVEL.INFO;
+#else
 			logLevel = Log.LEVEL.WARNING;
+#endif
 			Log.Info ("Configuration - Setting default config");
 
 			screenshotAtIntervals = false;

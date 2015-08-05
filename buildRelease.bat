@@ -46,10 +46,12 @@ if exist %d% goto five
 mkdir %d%
 :five
 
-xcopy src\Textures %HOMEDIR%\install\Gamedata\AutomatedScreenShots\Textures /y
+xcopy src\Textures\AS*.* %HOMEDIR%\install\Gamedata\AutomatedScreenShots\Textures /y
 copy bin\Release\AutomatedScreenshots.dll %HOMEDIR%\install\Gamedata\AutomatedScreenShots\Plugin
 copy  automatedscreenshots.version %HOMEDIR%\install\Gamedata\AutomatedScreenShots
 copy README.md %HOMEDIR%\install\Gamedata\AutomatedScreenshots
+copy ChangeLog.txt %HOMEDIR%\install\Gamedata\AutomatedScreenshots
+pause
 
 %HOMEDRIVE%
 cd %HOMEDIR%\install

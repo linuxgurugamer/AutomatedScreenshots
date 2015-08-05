@@ -1,8 +1,4 @@
-﻿#define STOCKTOOLBAR
-//#undef STOCKTOOLBAR
-#define BLIZZYTOOLBAR
-// #undef BLIZZYTOOLBAR
-
+﻿
 using System;
 using UnityEngine;
 using System.IO;
@@ -23,15 +19,10 @@ namespace AutomatedScreenshots
 		private static Texture2D AS_button_on = new Texture2D (38, 38, TextureFormat.ARGB32, false);
 		public static Texture2D AS_button_off = new Texture2D (38, 38, TextureFormat.ARGB32, false);
 		public static Texture2D AS_button_alert = new Texture2D (38, 38, TextureFormat.ARGB32, false);
-		//		private static Texture2D AS_button_alert_1 = new Texture2D (38, 38, TextureFormat.ARGB32, false);
-		//		private Texture2D AS_button_alert_2 = new Texture2D (38, 38, TextureFormat.ARGB32, false);
-		//			private int AS_button_alert_anim = 0;
-		#if (STOCKTOOLBAR)
+
 		private bool AS_Texture_Load = false;
-		#endif
 
 		private bool cfgWinData = false;
-		//		private bool cancel = false;
 		private static bool newScreenshotAtIntervals = true;
 		private static ushort newInterval = 1;
 		private static string interval = "";
@@ -74,22 +65,17 @@ namespace AutomatedScreenshots
 		public void OnGUIHideApplicationLauncher ()
 		{
 			if (!appLaucherHidden) {
-#if (STOCKTOOLBAR)
 
 				if (AS.configuration.BlizzyToolbarIsAvailable && AS.configuration.useBlizzyToolbar) {
 					HideToolbarStock ();
 					appLaucherHidden = true;
 				}
-#endif
+
 			}
 		}
-
-#if (STOCKTOOLBAR)
-
+			
 		public void OnGUIShowApplicationLauncher ()
 		{
-			//Log.Info ("OnGUIShowApplicationLauncher");
-
 			if (!AS.configuration.BlizzyToolbarIsAvailable || !AS.configuration.useBlizzyToolbar) {
 				if (appLaucherHidden) {
 					appLaucherHidden = false;
@@ -142,7 +128,6 @@ namespace AutomatedScreenshots
 			AS_Button = null;
 			appLaucherHidden = false;
 		}
-#endif
 
 		public bool Visible ()
 		{ 
@@ -298,62 +283,56 @@ namespace AutomatedScreenshots
 			hsScreenshotInterval = GUILayout.TextField (hsScreenshotInterval, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
 			GUILayout.EndHorizontal ();
 
-
-
-// Following #pragma disables the warning about unused variable
-#pragma warning disable 168
+			//
+			// I probably don't need to have the "finally" sections, but
+			// it doesn't hurt and will be there if I need it in the future
+			//
 			try {
 				newInterval = Convert.ToUInt16 (interval);
-			} catch (FormatException e) {
-			} catch (OverflowException e) {
+			} catch (FormatException ) {
+			} catch (OverflowException ) {
 			} finally {
-				// AS.configuration.screenshotInterval =  newInterval;
+
 			}
 
 			try {
 				newJPGQuality = Convert.ToUInt16 (JPGQuality);
-			} catch (FormatException e) {
-			} catch (OverflowException e) {
+			} catch (FormatException ) {
+			} catch (OverflowException ) {
 			} finally {
-				// AS.configuration.screenshotInterval =  newInterval;
+
 			}
 
 
 			try {
 				newsecondsUntilImpact = Convert.ToUInt16 (secondsUntilImpact);
-			} catch (FormatException e) {
-			} catch (OverflowException e) {
+			} catch (FormatException ) {
+			} catch (OverflowException ) {
 			} finally {
-				// AS.configuration.screenshotInterval =  newInterval;
+
 			}
 			try {
 				newhsAltitudeLimit = Convert.ToUInt16 (hsAltitudeLimit);
-			} catch (FormatException e) {
-			} catch (OverflowException e) {
+			} catch (FormatException ) {
+			} catch (OverflowException ) {
 			} finally {
-				// AS.configuration.screenshotInterval =  newInterval;
+
 			}
 			try {
 				newhsMinVerticalSpeed = Convert.ToUInt16 (hsMinVerticalSpeed);
-			} catch (FormatException e) {
-			} catch (OverflowException e) {
+			} catch (FormatException ) {
+			} catch (OverflowException ) {
 			} finally {
-				// AS.configuration.screenshotInterval =  newInterval;
+
 			}
 			try {
 				newhsScreenshotInterval = Convert.ToUInt16 (hsScreenshotInterval);
-			} catch (FormatException e) {
-			} catch (OverflowException e) {
+			} catch (FormatException ) {
+			} catch (OverflowException ) {
 			} finally {
-				// AS.configuration.screenshotInterval =  newInterval;
+
 			}
-
-
-
-
-
-#pragma warning restore 168
-
+	
 			GUILayout.EndVertical ();
 			GUI.DragWindow ();
 

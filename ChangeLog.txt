@@ -1,0 +1,13 @@
+﻿0.1.0		initial release
+
+0.2.0		Added pre crash/landing detection 
+			Added ability to take screenshots both with and without UI
+			Bug fixed where if you had the UI hidden, it would be enabled after a screenshot
+			Fixed missing toolbar icons
+0.3.0		Updated logging code so INFO is forced during development/debugging
+			Added code to be able to tell the Historian mod a screenshot is happening.  Needs a small change to Historian to work
+			Cleaned up some more code
+			Updated buildrelease.bat
+			Removed unnecessary PNG files from release
+			Added ChangeLog.txt to release
+			Moved ChangeLog.txt up one directory

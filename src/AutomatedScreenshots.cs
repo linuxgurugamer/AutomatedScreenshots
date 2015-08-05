@@ -1,13 +1,12 @@
-﻿#define STOCKTOOLBAR
-// #undef STOCKTOOLBAR
-#define BLIZZYTOOLBAR
-// #undef BLIZZYTOOLBAR
+﻿
 
 using System;
 using UnityEngine;
 using KSP.IO;
 
+using System.Reflection;
 
+using KSEA.Historian;
 
 namespace AutomatedScreenshots
 {
@@ -42,18 +41,13 @@ namespace AutomatedScreenshots
 		public static bool changeCallbacks;
 		public static Configuration configuration = new Configuration ();
 		public static KeyCode activeKeycode;
-
 		static private UICLASS uiVisiblity;
-//		private bool uiVisible = true;
 		private bool wasUIVisible = true;
-//		private static KeyCode toggleUIKeycode = KeyCode.F2;
 		private ushort dualScreenshots = 0;
-
 		public MainMenuGui gui = null;
 
 		static AS ()
 		{
-				
 		}
 
 		public void activateSnapshots (bool val)
@@ -64,7 +58,6 @@ namespace AutomatedScreenshots
 		public AS ()
 		{
 			Log.Info ("New instance of Automated Screenshots: AS constructor");
-
 		}
 
 		public void Awake ()
@@ -72,16 +65,20 @@ namespace AutomatedScreenshots
 			Log.Info ("Awake");
 			uiVisiblity = new UICLASS();
 			uiVisiblity.Awake ();
+			Version.VerifyHistorianVersion ();
 		}
 
 		public void Start ()
 		{
-			Log.SetLevel (Log.LEVEL.INFO);
+
 			Log.Info ("Start");
 			DontDestroyOnLoad (this);
 			configuration.Load ();
+#if (DEBUG)
+			Log.SetLevel (Log.LEVEL.INFO);
+#else
 			Log.SetLevel (configuration.logLevel);
-
+#endif
 			configuration.BlizzyToolbarIsAvailable = ToolbarManager.ToolbarAvailable;
 			Log.Info ("BlizzyToolbarIsAvailable: " + configuration.BlizzyToolbarIsAvailable.ToString ());
 
@@ -101,26 +98,15 @@ namespace AutomatedScreenshots
 			if (this.gui == null) {
 				Log.Info ("this.gui == null");
 				this.gui = this.gameObject.AddComponent<MainMenuGui> ();
-				// 	this.gui.OnGUIApplicationLauncherReady ();
 				this.gui.SetVisible (false);
 				RegisterEvents ();
-				//gui.OnGUIApplicationLauncherReady ();
-#if (STOCKTOOLBAR)
-				{
-					//	GameEvents.onGUIApplicationLauncherReady.Add (gui.OnGUIApplicationLauncherReady);
-				}
-#endif
+
 			}
 
 			if (HighLogic.LoadedScene == GameScenes.MAINMENU) {
-
-#if (STOCKTOOLBAR)
-
 				if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar)
 					gui.OnGUIHideApplicationLauncher ();
-#endif
 			} else {
-#if (STOCKTOOLBAR)
 				if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {
 					if (MainMenuGui.AS_Button == null)
 						GameEvents.onGUIApplicationLauncherReady.Add (gui.OnGUIApplicationLauncherReady);
@@ -128,17 +114,13 @@ namespace AutomatedScreenshots
 				} else {
 					setToolbarButtonVisibility (true);
 				}
-#endif
 			}
 
 			if (changeCallbacks) {
 				Log.Info ("Update - changeCallbacks: " + changeCallbacks.ToString ());
 				RegisterEvents ();
 			}
-
-			//if (Input.GetKeyDown (toggleUIKeycode))
-			//	uiVisible = !uiVisible;
-			//Log.Info("isUIVisible: " + uiVisiblity.isVisible().ToString());
+				
 			if (Input.GetKeyDown (activeKeycode)) {
 				Log.Info ("Update:     GameScene: " + HighLogic.LoadedScene.ToString ());
 				if (HighLogic.LoadedScene != GameScenes.MAINMENU) {
@@ -168,9 +150,7 @@ namespace AutomatedScreenshots
 		{
 			string pngName;
 
-			//		Log.Info ("LateUpdate");
 			if (doSnapshots) {
-//				guiVisible = gui.Visible ();
 				if (screenshotTaken && configuration.noGUIOnScreenshot == true && System.IO.File.Exists (screenshotFile) && wasUIVisible)
 					GameEvents.onShowUI.Fire ();
 				// If there is a png file waiting to be converted, then don't do another screenshot
@@ -187,8 +167,7 @@ namespace AutomatedScreenshots
 						pngToConvert = "";
 					}
 				} else {
-					Log.Info("isUIVisible: " + uiVisiblity.isVisible().ToString());
-				//	Log.Info ("uiVisible: " + uiVisible.ToString ());
+					// Log.Info("isUIVisible: " + uiVisiblity.isVisible().ToString());
 					if (AS.configuration.precrashSnapshots) {
 						Vessel vessel = FlightGlobals.ActiveVessel;
 						if ((-vessel.verticalSpeed > AS.configuration.hsMinVerticalSpeed) &&
@@ -234,10 +213,12 @@ namespace AutomatedScreenshots
 
 						this.precrash = false;
 
+						//
 						// I make the assumption that if the player wants the gui during the screenshot, then 
 						// it will be left visible.
+						//
 						wasUIVisible = uiVisiblity.isVisible() | configuration.guiOnScreenshot;
-						Log.Info ("Update: Screenshotfolder:" + pngName);
+						//Log.Info ("Update: Screenshotfolder:" + pngName);
 						if (configuration.noGUIOnScreenshot == true)
 							GameEvents.onHideUI.Fire ();
 						if (configuration.noGUIOnScreenshot && configuration.guiOnScreenshot) {
@@ -250,6 +231,10 @@ namespace AutomatedScreenshots
 						}
 						screenshotTaken = true;
 						screenshotFile = pngName;
+						//
+						// If Historian is available, then tell it to activate
+						//
+						Version.set_m_Active();
 						Application.CaptureScreenshot (pngName);
 
 						if (configuration.convertToJPG) {
@@ -264,8 +249,6 @@ namespace AutomatedScreenshots
 		public void RegisterEvents ()
 		{
 			Log.Info ("RegisterEvents");
-//			GameEvents.onShowUI.Add(this.onShowUI);
-//			GameEvents.onHideUI.Add(this.onHideUI);
 
 			RegisterSceneChanges (false);
 			RegisterSpecialEvents (false);
@@ -286,6 +269,9 @@ namespace AutomatedScreenshots
 			}
 		}
 
+		//
+		// Register and unregister all the special events here
+		//
 		private  void RegisterSpecialEvents (bool enable)
 		{
 			Log.Info ("RegisterSpecialEvents: " + enable.ToString ());
@@ -345,7 +331,6 @@ namespace AutomatedScreenshots
 		private void CallbackGameSceneLoadRequested (GameScenes scene)
 		{
 			Log.Info ("CallbackGameSceneLoadRequested");
-			// this.gui.SetVisible (scene == GameScenes.MAINMENU);
 			if (AS.configuration.screenshotOnSceneChange) {
 				this.newScene = true;
 				this.sceneReady = false;
@@ -613,8 +598,7 @@ namespace AutomatedScreenshots
 
 				f = f.Replace ("[evt]", evt);
 			}
-
-
+				
 			return f;
 		}
 	}
