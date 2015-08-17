@@ -11,3 +11,12 @@
 			Removed unnecessary PNG files from release
 			Added ChangeLog.txt to release
 			Moved ChangeLog.txt up one directory
+0.4.0		Changed minimum frequency of screenshots from 1 sec to 0.1 sec
+			Fixed bug where no active vessel caused spamming in log file in the SpaceCenter scene
+			Added automated saving of save files
+			Added rotation of save files to limit number of files 
+			Fixed screenshots during timewarp, to NOT take too many snapshots.  Now
+			 uses realtime, not gametime
+			Fixed name of Plugin directory, changed to Plugins
+			Added check for colon in file name, replace it with a dash
+			Updated hour/min/sec time to have leading zeroes

@@ -2,22 +2,34 @@
 
 A mod to grab automated screenshots at specific time intervals and special events
 
+Additionally, can do automated saves.
 
 This mod will take screenshots at specified intervals.
 
 The following are the ways that screenshots can be taken:
 
-1.  The intervals can be specified by time in seconds between each screenshot
+1.  The intervals can be specified by time in seconds between each screenshot.  
+    The smallest interval allowed is one tenth of a second, so if you really want 
+    to kill your performance and disk, you can specify an interval of 0.1 second
 2.  Screenshots can be taken at each scene change
 3.  Screenshots can be taken at special events.
-4.  The UI can be hidden during the screenshots.  Be aware that this will be visible, the UI will flicker
-    off and then on during the screenshot.
-5.  If options to both show and hide the UI are specified, then two screenshots will be taken, one with and one without the UI
-6.  Pre crash/landing detection is added, so if specified, then faster screenshots will be taken just before crashes
+4.  The UI can be hidden during the screenshots.  Be aware that this will be visible, 
+    the UI will flicker off and then on during the screenshot.
+5.  If options to both show and hide the UI are specified, then two screenshots will 
+    be taken, one with and one without the UI
+6.  Pre crash/landing detection is added, so if specified, then faster screenshots 
+    will be taken just before crashes
 
 New Feature:
 
-7.  Integration with Historian.  If Historian is loaded and configured, AS will call Historian before each screenshot to activate the ribbon
+7.  Integration with Historian.  If Historian is loaded and configured, AS will call 
+    Historian before each screenshot to activate the ribbon
+
+New Feature:
+
+8.  Automatic Saves.  The mod will now do automatic saves at specified intervals.  It will 
+    only keep a specified number of save files.
+
 
 The screenshots are saved as PNG files.  PNG files can be big, so you can
 also specify that the PNG files be converted to JPG files, and optionally
@@ -55,3 +67,8 @@ AS_2015-04-30-22-22_KSPv1.0.0_SaveGameTest_Kerbal#X_Kerbin_Shores_PRELAUNCH_Y1_D
 
 
 The code for the JPG conversion and the custom filenames was taken from the Sensible Screenshot mod, written by magico13
+
+Automated Saves
+
+The mod will now do automatic saves at specified intervals. it will only keep a specified number of save files.
+Automatic saves is turned on by hitting Ctrl-F5

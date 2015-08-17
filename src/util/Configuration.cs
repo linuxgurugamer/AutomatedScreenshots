@@ -15,8 +15,8 @@ namespace AutomatedScreenshots
 
 		[Persistent] public Log.LEVEL logLevel { get; set; }
 
-		public bool screenshotAtIntervals { get; set; }
-		public ushort screenshotInterval { get; set; }
+//		public bool screenshotAtIntervals { get; set; }
+		public float screenshotInterval { get; set; }
 		public bool convertToJPG { get; set; }
 		public bool keepOrginalPNG { get; set; }
 		public string screenshotPath { get; set; }
@@ -34,9 +34,18 @@ namespace AutomatedScreenshots
 		public ushort secondsUntilImpact {get; set; }
 		public ushort hsAltitudeLimit { get; set; }
 		public ushort hsMinVerticalSpeed { get; set; }
-		public ushort hsScreenshotInterval { get; set; }
+		public float hsScreenshotInterval { get; set; }
 
 		internal Boolean BlizzyToolbarIsAvailable = false;
+
+		//
+		// Automated saves info
+		//
+		public bool autoSave;
+		public ushort minBetweenSaves;
+		public string savePrefix;
+		public ushort numToRotate;
+	//	public string toggleAutoSave;
 
 		public Configuration ()
 		{
@@ -47,8 +56,8 @@ namespace AutomatedScreenshots
 #endif
 			Log.Info ("Configuration - Setting default config");
 
-			screenshotAtIntervals = false;
-			screenshotInterval = 5;
+//			screenshotAtIntervals = false;
+			screenshotInterval = 5.0F;
 			convertToJPG = true;
 			keepOrginalPNG = false;
 			screenshotPath = FileOperations.ROOT_PATH + "Screenshots/";
@@ -66,7 +75,13 @@ namespace AutomatedScreenshots
 			secondsUntilImpact = 5;
 			hsAltitudeLimit = 25;
 			hsMinVerticalSpeed = 3;
-			hsScreenshotInterval = 1;
+			hsScreenshotInterval = 0.2F;
+
+			autoSave = false;
+			minBetweenSaves = 5;
+			savePrefix = "rotate-[cnt]";
+			numToRotate = 15;
+			//toggleAutoSave = "Ctrl-F5";
 		}
 
 		public static Configuration Instance {

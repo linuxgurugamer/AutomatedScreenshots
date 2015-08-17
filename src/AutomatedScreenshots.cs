@@ -1,6 +1,7 @@
 ﻿
 
 using System;
+using System.Threading;
 using UnityEngine;
 using KSP.IO;
 
@@ -8,26 +9,31 @@ using System.Reflection;
 
 using KSEA.Historian;
 
+
 namespace AutomatedScreenshots
 {
+	
 	public enum UIOnScreenshot : ushort
 	{
 		show = 0,
 		hide,
-		both};
-	
+		both}
+
+	;
+
 	[KSPAddon (KSPAddon.Startup.MainMenu, true)]
 	public partial class AS : MonoBehaviour
 	{
 
-		
+		public const String TITLE = "Automated Screenshots and Saves";
+
 		//			public Configuration configuration = Configuration.Instance;
 		//			public static AS Instance { get; private set;}
 		private float lastUpdate = 0.0f;
 		private float lastPrecrashUpdate = 0.0f;
 		private int cnt = 0;
 		//		private float snapshotInterval = 5.0f;
-		static bool doSnapshots = false;
+		public static bool doSnapshots = false;
 		private bool specialScene = false;
 		private bool precrash = false;
 		private bool newScene = false;
@@ -45,14 +51,13 @@ namespace AutomatedScreenshots
 		private bool wasUIVisible = true;
 		private ushort dualScreenshots = 0;
 		public MainMenuGui gui = null;
+		private float lastBackup = 0.0f;
+		private Thread backupThread = null;
+
+		int saveFileCnt = 0;
 
 		static AS ()
 		{
-		}
-
-		public void activateSnapshots (bool val)
-		{
-			doSnapshots = val;
 		}
 
 		public AS ()
@@ -63,7 +68,7 @@ namespace AutomatedScreenshots
 		public void Awake ()
 		{
 			Log.Info ("Awake");
-			uiVisiblity = new UICLASS();
+			uiVisiblity = new UICLASS ();
 			uiVisiblity.Awake ();
 			Version.VerifyHistorianVersion ();
 		}
@@ -120,37 +125,84 @@ namespace AutomatedScreenshots
 				Log.Info ("Update - changeCallbacks: " + changeCallbacks.ToString ());
 				RegisterEvents ();
 			}
-				
+
+			if ((Input.GetKey (KeyCode.RightControl) || Input.GetKey (KeyCode.LeftControl)) &&
+			    Input.GetKeyDown (KeyCode.F5)) {
+				AS.configuration.autoSave = !AS.configuration.autoSave;
+				this.gui.set_AS_Button_active ();
+				ToolBarBusy (AS.configuration.autoSave, AS.doSnapshots);
+				Log.Info ("AutoSave: " + AS.configuration.autoSave.ToString ());
+			}
+
 			if (Input.GetKeyDown (activeKeycode)) {
 				Log.Info ("Update:     GameScene: " + HighLogic.LoadedScene.ToString ());
 				if (HighLogic.LoadedScene != GameScenes.MAINMENU) {
 					Log.Info ("KeyCode: " + activeKeycode.ToString () + " pressed");
 					if (!doSnapshots) {
-						if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {					
-							MainMenuGui.AS_Button.SetTexture (MainMenuGui.AS_button_alert);
+						if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {
+							Log.Info ("Before MainMenuGui.AS_Button.SetTexture on");
+							MainMenuGui.AS_Button.SetTexture (MainMenuGui.AS_button_config);
+							Log.Info ("After MainMenuGui.AS_Button.SetTexture");
 						} else {
 							ToolBarActive (true);
 						}
 					} else {
-						if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {					
+						if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {	
+							Log.Info ("MainMenuGui.AS_Button.SetTexture off");
 							MainMenuGui.AS_Button.SetTexture (MainMenuGui.AS_button_off);
+							Log.Info ("After MainMenuGui.AS_Button.SetTexture");
 						} else {
 							ToolBarActive (false);
 						}
 					}
 						
 					doSnapshots = !doSnapshots;
-				} else if (HighLogic.LoadedScene == GameScenes.MAINMENU)
+					this.gui.set_AS_Button_active ();
+					ToolBarBusy (AS.configuration.autoSave, AS.doSnapshots);
+					Log.Info ("LoadedScene   doSnapshots: " + doSnapshots.ToString ());
+				} else if (HighLogic.LoadedScene == GameScenes.MAINMENU) {
+					Log.Info ("LoadedScene = MAINMENU   doSnapshots: " + doSnapshots.ToString ());
 					doSnapshots = false;
+				}
 			}
 			
+		}
+
+		public void BackupWork ()
+		{
+			SaveFilesHandlers sfh  = new SaveFilesHandlers ();
+
+			// SaveMode is:  OVERWRITE    APPEND   ABORT
+			SaveMode s = SaveMode.OVERWRITE;
+
+			saveFileCnt = sfh.FileSaveCnt(KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder) + 1;
+			string saveFileName = AddInfo (configuration.savePrefix, saveFileCnt);
+
+			string str = GamePersistence.SaveGame (saveFileName, HighLogic.SaveFolder, s);
+			Log.Info ("String: " + str);
+
+			sfh.deleteOldestSaveFile (KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder, configuration.numToRotate, saveFileCnt, saveFileName);
+
+			Log.Info ("backup thread terminated");
+		}
+
+
+		private void startBackup ()
+		{
+			this.backupThread = new Thread (new ThreadStart (this.BackupWork));
+			this.backupThread.Start ();
 		}
 
 		public void LateUpdate ()
 		{
 			string pngName;
 
+			if (AS.configuration.autoSave && ((Time.realtimeSinceStartup - lastBackup) > AS.configuration.minBetweenSaves* 60)) {
+				lastBackup = Time.realtimeSinceStartup;
+				startBackup ();
+			}
 			if (doSnapshots) {
+				Log.Info ("In LateUpdate, doSnapshots");
 				if (screenshotTaken && configuration.noGUIOnScreenshot == true && System.IO.File.Exists (screenshotFile) && wasUIVisible)
 					GameEvents.onShowUI.Fire ();
 				// If there is a png file waiting to be converted, then don't do another screenshot
@@ -167,32 +219,38 @@ namespace AutomatedScreenshots
 						pngToConvert = "";
 					}
 				} else {
-					// Log.Info("isUIVisible: " + uiVisiblity.isVisible().ToString());
 					if (AS.configuration.precrashSnapshots) {
-						Vessel vessel = FlightGlobals.ActiveVessel;
-						if ((-vessel.verticalSpeed > AS.configuration.hsMinVerticalSpeed) &&
-						    ((vessel.GetHeightFromTerrain () / -vessel.verticalSpeed < AS.configuration.secondsUntilImpact) ||
-						    (vessel.GetHeightFromTerrain () < AS.configuration.hsAltitudeLimit)
-						    )) {
+						if (FlightGlobals.ActiveVessel != null) {
+							Vessel vessel = FlightGlobals.ActiveVessel;
 
-							if (Time.time - lastPrecrashUpdate > configuration.hsScreenshotInterval) {
-								this.precrash = true;
-								lastPrecrashUpdate = Time.time;
-								//Log.Info ("vessel.verticalSpeed: " + vessel.verticalSpeed.ToString ());
-								//Log.Info ("vessel.GetHeightFromTerrain: " + vessel.GetHeightFromTerrain ().ToString ());
-								//Log.Info ("vessel.GetHeightFromTerrain () / -vessel.verticalSpeed: " + (vessel.GetHeightFromTerrain () / -vessel.verticalSpeed).ToString ());
+							if ((-vessel.verticalSpeed > AS.configuration.hsMinVerticalSpeed) &&
+								((FlightGlobals.ship_altitude  / -vessel.verticalSpeed < AS.configuration.secondsUntilImpact) ||
+									(FlightGlobals.ship_altitude  < AS.configuration.hsAltitudeLimit)
+							    )) {
+
+								if (Time.realtimeSinceStartup - lastPrecrashUpdate > configuration.hsScreenshotInterval) {
+									this.precrash = true;
+									lastPrecrashUpdate = Time.realtimeSinceStartup;
+
+									Log.Info ("vessel.verticalSpeed: " + vessel.verticalSpeed.ToString ());
+									Log.Info ("FlightGlobals.ship_altitude: " + FlightGlobals.ship_altitude .ToString ());
+									Log.Info ("FlightGlobals.ship_altitude  / -vessel.verticalSpeed: " + (FlightGlobals.ship_altitude  / -vessel.verticalSpeed).ToString ());
+								}
 							}
 						}
 					}
 
 					if (this.specialScene || this.precrash || dualScreenshots == 1 ||
-					    (AS.configuration.screenshotAtIntervals &&
-					    ((this.newScene && this.sceneReady && Time.time - lastSceneUpdate > 1) ||
-					    (Time.time - lastUpdate > configuration.screenshotInterval)))) {
+					    ( /*AS.configuration.screenshotAtIntervals && */
+					    ((this.newScene && this.sceneReady && Time.realtimeSinceStartup - lastSceneUpdate > 1) ||
+					    ((Time.realtimeSinceStartup - lastUpdate) > configuration.screenshotInterval)
+					    )
+					    )) {
+						Log.Info ("Taking screenshot");
 						newScene = false;
 						this.specialScene = false;
 
-						lastUpdate = Time.time;
+						lastUpdate = Time.realtimeSinceStartup;
 						//check if directory doesn't exist
 						if (!System.IO.Directory.Exists (FileOperations.ScreenshotFolder ())) {    
 							//if it doesn't, try to create it
@@ -217,7 +275,7 @@ namespace AutomatedScreenshots
 						// I make the assumption that if the player wants the gui during the screenshot, then 
 						// it will be left visible.
 						//
-						wasUIVisible = uiVisiblity.isVisible() | configuration.guiOnScreenshot;
+						wasUIVisible = uiVisiblity.isVisible () | configuration.guiOnScreenshot;
 						//Log.Info ("Update: Screenshotfolder:" + pngName);
 						if (configuration.noGUIOnScreenshot == true)
 							GameEvents.onHideUI.Fire ();
@@ -234,7 +292,7 @@ namespace AutomatedScreenshots
 						//
 						// If Historian is available, then tell it to activate
 						//
-						Version.set_m_Active();
+						Version.set_m_Active ();
 						Application.CaptureScreenshot (pngName);
 
 						if (configuration.convertToJPG) {
@@ -342,7 +400,7 @@ namespace AutomatedScreenshots
 		{
 			Log.Info ("CallbackLevelWasLoaded");
 			this.sceneReady = true;
-			lastSceneUpdate = Time.time;
+			lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackOnVesselChange (Vessel evt)
@@ -351,7 +409,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			lastSceneUpdate = Time.time;
+			lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackVesselEventHappened (Vessel evt)
@@ -360,7 +418,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			lastSceneUpdate = Time.time;
+			lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackEventReportHappened (EventReport evt)
@@ -369,7 +427,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			lastSceneUpdate = Time.time;
+			lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackVector3dWasLoaded (Vector3d vector)
@@ -378,7 +436,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			//lastSceneUpdate = Time.time;
+			//lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackPartDieWasLoaded (Part part)
@@ -387,7 +445,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			//lastSceneUpdate = Time.time;
+			//lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackPartJointWasLoaded (PartJoint partjoint)
@@ -396,7 +454,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			//lastSceneUpdate = Time.time;
+			//lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackStageActivateWasLoaded (int i)
@@ -405,7 +463,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			//lastSceneUpdate = Time.time;
+			//lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackCrewEvaLoaded (GameEvents.FromToAction<Part, Part> action)
@@ -414,7 +472,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			//lastSceneUpdate = Time.time;
+			//lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackPartCouple (GameEvents.FromToAction<Part, Part> action)
@@ -423,7 +481,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			//lastSceneUpdate = Time.time;
+			//lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackPartExplode (GameEvents.ExplosionReaction action)
@@ -432,7 +490,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			//lastSceneUpdate = Time.time;
+			//lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackSOIChanged (GameEvents.HostedFromToAction<Vessel, CelestialBody >  action)
@@ -441,7 +499,7 @@ namespace AutomatedScreenshots
 			//this.newScene = true;
 			//this.sceneReady = true;
 			this.specialScene = true;
-			//lastSceneUpdate = Time.time;
+			//lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
 		internal void OnDestroy ()
@@ -454,6 +512,7 @@ namespace AutomatedScreenshots
 		public void ConvertToJPG (string originalFile, string newFile, int quality = 75)
 		{
 			Texture2D png = new Texture2D (1, 1);
+
 			byte[] pngData = System.IO.File.ReadAllBytes (originalFile);
 			png.LoadImage (pngData);
 			byte[] jpgData = png.EncodeToJPG (quality);
@@ -507,6 +566,9 @@ namespace AutomatedScreenshots
 		{
 			string f = original;
 			Log.Info ("AddInfo: original: " + original);
+			if (f.Contains (":")) {
+				f = f.Replace(":", "-");
+			}
 			if (f.Contains ("[cnt]")) {
 				Log.Info ("Contains [cnt]");
 				f = f.Replace ("[cnt]", cnt.ToString ());
@@ -571,19 +633,25 @@ namespace AutomatedScreenshots
 			}
 			if (f.Contains ("[hour]")) {
 				string time = times [2].ToString ();
+				if (time.Length == 1)
+					time = "0" + time;
 				f = f.Replace ("[hour]", time);
 			}
 			if (f.Contains ("[min]")) {
 				string time = times [3].ToString ();
+				if (time.Length == 1)
+					time = "0" + time;
 				f = f.Replace ("[min]", time);
 			}
 			if (f.Contains ("[sec]")) {
 				string time = times [4].ToString ();
+				if (time.Length == 1)
+					time = "0" + time;
 				f = f.Replace ("[sec]", time);
 			}
 
 			// In case they don't have anything there
-			if (f == original) {
+			if (f == original && cnt > 0) {
 				Log.Info ("f == original");
 				f = f + cnt.ToString ();
 			}

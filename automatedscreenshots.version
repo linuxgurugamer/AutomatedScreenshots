@@ -1,12 +1,12 @@
 {
 	"NAME":"AutomatedScreenshots",
 	"URL":"http://ksp-avc.cybutek.net/version.php?id=202",
-	"DOWNLOAD":"https://kerbalstuff.com/mod/1030",
+	"DOWNLOAD":"https://kerbalstuff.com/mod/1086",
 	"VERSION":
 	{
 		"MAJOR":0,
-		"MINOR":3,
-		"PATCH":0,
+		"MINOR":4,
+		"PATCH":1,
 		"BUILD":0
 	},
 	"KSP_VERSION":

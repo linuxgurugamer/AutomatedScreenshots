@@ -82,7 +82,7 @@ namespace AutomatedScreenshots
 				configuration.screenshotPath = FileOperations.ROOT_PATH + "Screenshots/";
 			configFileNode.SetValue ("screenshotPath", configuration.screenshotPath.ToString (), true);
 			configFileNode.SetValue ("filenameFormat", configuration.filename.ToString (), true);
-			configFileNode.SetValue ("screenshotAtIntervals", configuration.screenshotAtIntervals.ToString (), true);
+//			configFileNode.SetValue ("screenshotAtIntervals", configuration.screenshotAtIntervals.ToString (), true);
 			configFileNode.SetValue ("screenshotInterval", configuration.screenshotInterval.ToString (), true);
 			configFileNode.SetValue ("convertToJPG", configuration.convertToJPG.ToString (), true);
 			configFileNode.SetValue ("keepOrginalPNG", configuration.keepOrginalPNG.ToString (), true);
@@ -101,7 +101,13 @@ namespace AutomatedScreenshots
 			configFileNode.SetValue ("hsMinVerticalSpeed", configuration.hsMinVerticalSpeed.ToString (), true);
 			configFileNode.SetValue ("hsScreenshotInterval", configuration.hsScreenshotInterval.ToString (), true);
 
+			configFileNode.SetValue ("minBetweenSaves", configuration.minBetweenSaves.ToString (), true);
+			configFileNode.SetValue ("saveFilePrefix", configuration.savePrefix, true);
+			configFileNode.SetValue ("maxSaveFiles", configuration.numToRotate.ToString (), true);
+
+
 			configuration.keycode = AS.setActiveKeycode (configuration.keycode.ToString ()).ToString ();
+
 			configFile.Save (AS_CFG_FILE);
 		}
 
@@ -127,6 +133,13 @@ namespace AutomatedScreenshots
 				return oldvalue.ToString();
 			return value;
 		}
+		static string SafeLoad (string value, float oldvalue)
+		{
+			if (value == null)
+				return oldvalue.ToString();
+			return value;
+		}
+
 		public static void LoadConfiguration (Configuration configuration, String file)
 		{
 			configFile = ConfigNode.Load (AS_CFG_FILE);
@@ -146,8 +159,9 @@ namespace AutomatedScreenshots
 					if ((configuration.filename.Contains ("/") || configuration.filename.Contains ("\\")))
 						configuration.filename = "AS-[cnt]";
 
-					configuration.screenshotAtIntervals = bool.Parse (SafeLoad(configFileNode.GetValue ("screenshotAtIntervals"),configuration.screenshotAtIntervals));
-					configuration.screenshotInterval = ushort.Parse (SafeLoad(configFileNode.GetValue ("screenshotInterval"),configuration.screenshotInterval));
+					configuration.screenshotInterval = float.Parse (SafeLoad(configFileNode.GetValue ("screenshotInterval"),configuration.screenshotInterval));
+					if (configuration.screenshotInterval < 0.1F)
+						configuration.screenshotInterval = 0.1F;
 					configuration.convertToJPG = bool.Parse (SafeLoad(configFileNode.GetValue ("convertToJPG"),configuration.convertToJPG));
 					configuration.keepOrginalPNG = bool.Parse (SafeLoad(configFileNode.GetValue ("keepOrginalPNG"),configuration.keepOrginalPNG));
 					configuration.JPGQuality = ushort.Parse (SafeLoad(configFileNode.GetValue ("JPGQuality"),configuration.JPGQuality));
@@ -166,7 +180,19 @@ namespace AutomatedScreenshots
 					configuration.secondsUntilImpact = ushort.Parse (SafeLoad(configFileNode.GetValue ("secondsUntilImpact"),configuration.secondsUntilImpact));
 					configuration.hsAltitudeLimit = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsAltitudeLimit"),configuration.hsAltitudeLimit));
 					configuration.hsMinVerticalSpeed = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsMinVerticalSpeed"),configuration.hsMinVerticalSpeed));
-					configuration.hsScreenshotInterval = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsScreenshotInterval"),configuration.hsScreenshotInterval));
+					configuration.hsScreenshotInterval = float.Parse (SafeLoad(configFileNode.GetValue ("hsScreenshotInterval"),configuration.hsScreenshotInterval));
+					if (configuration.hsScreenshotInterval < 0.1F)
+						configuration.hsScreenshotInterval = 0.1F;
+
+					configuration.minBetweenSaves = ushort.Parse(SafeLoad(configFileNode.GetValue ("minBetweenSaves"),configuration.minBetweenSaves));
+					if (configuration.minBetweenSaves <= 0)
+						configuration.minBetweenSaves = 5;
+					configuration.savePrefix = SafeLoad (configFileNode.GetValue ("saveFilePrefix"), configuration.savePrefix);
+					if ((configuration.savePrefix.Contains ("/") || configuration.savePrefix.Contains ("\\")))
+						configuration.savePrefix = "rotate-[cnt]";
+					configuration.numToRotate = ushort.Parse(SafeLoad(configFileNode.GetValue ("maxSaveFiles"),configuration.numToRotate));
+					if (configuration.numToRotate <= 0)
+						configuration.numToRotate = 15;
 				}
 			}
 		}

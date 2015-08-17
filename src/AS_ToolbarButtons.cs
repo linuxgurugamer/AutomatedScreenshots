@@ -10,8 +10,9 @@ namespace AutomatedScreenshots
     public partial class AS
     {
 		static IButton btnReturn = null;
-		private const string _tooltipOn = "Hide AutomatedScreenshots";
-		private const string _tooltipOff = "Show AutomatedScreenshots";
+		private const string _tooltipOn = "Hide AutomatedScreenshots & Saves";
+		private const string _tooltipOff = "Show AutomatedScreenshots & Saves";
+		public const string TEXTURE_DIR = "AutomatedScreenshots/Textures/";
 
 		public void setToolbarButtonVisibility(bool v)
 		{
@@ -29,7 +30,8 @@ namespace AutomatedScreenshots
 				gui.GUI_SaveData ();
 
 				if (AS.configuration.BlizzyToolbarIsAvailable && AS.configuration.useBlizzyToolbar) {
-					btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24_white";
+//					btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24_white";
+					btnReturn.TexturePath = TEXTURE_DIR + "Auto-24";
 					gui.OnGUIHideApplicationLauncher ();
 					//InitToolbarButton ();
 				} else {
@@ -52,17 +54,47 @@ namespace AutomatedScreenshots
 				gui.SetVisible (true);
 				GUI.enabled = true;
 				btnReturn.ToolTip = _tooltipOn;
-				btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24";
+//				btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24";
+				btnReturn.TexturePath = TEXTURE_DIR + "Auto-negative-24";
 			}
 		}
 
-		public static void  ToolBarActive(bool active)
+		public /*static*/ void  ToolBarActive(bool active)
 		{
 			if (active)
-				btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24_green";
+//				btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24_green";
+				btnReturn.TexturePath = TEXTURE_DIR + "Auto-snapshot-24";
 			else
-				btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24_white";
+//				btnReturn.TexturePath = "AutomatedScreenshots/Textures/AS_24_white";
+				btnReturn.TexturePath = TEXTURE_DIR + "Auto-24";
 		}
+
+
+		public /* static*/ void  ToolBarBusy(bool autoSave, bool doSnapshots)
+		{
+			Log.Info ("ToolBarBusy:  autoSave: " + autoSave.ToString () + "    doSnapshot: " + doSnapshots.ToString ());
+			if (doSnapshots == false && autoSave == false)
+				btnReturn.TexturePath = TEXTURE_DIR + "Auto-24";
+				//AS_Button.SetTexture (AS_button_off);
+			if (doSnapshots == true && autoSave == false)
+			{
+				//Log.Info ("Setting auto-snapshot-24");
+				btnReturn.TexturePath = TEXTURE_DIR + "Auto-snapshot-24";
+				//AS_Button.SetTexture (AS_button_snapshot);
+			}
+			if (doSnapshots == false && autoSave == true)
+			{
+				//Log.Info ("Setting Auto-save-24");
+				btnReturn.TexturePath = TEXTURE_DIR + "Auto-save-24";
+				//AS_Button.SetTexture (AS_button_save);
+			}
+			if (doSnapshots == true && autoSave == true)
+				btnReturn.TexturePath = TEXTURE_DIR + "Auto-snapshot-save-24";
+				//AS_Button.SetTexture (AS_button_snapshot_save);
+		}
+
+
+
         /// <summary>
         /// initialises a Toolbar Button for this mod
         /// </summary>
@@ -74,8 +106,9 @@ namespace AutomatedScreenshots
             {
 				Log.Info("Initialising the Toolbar Icon");
                 btnReturn = ToolbarManager.Instance.add("AutomatedScreenshots", "btnReturn");
-				btnReturn.TexturePath = "SpaceTux/AS/Textures/AS_24_white";
-                btnReturn.ToolTip = "Automated Screenshots";
+//				btnReturn.TexturePath = "SpaceTux/AS/Textures/AS_24_white";
+				btnReturn.TexturePath = TEXTURE_DIR + "Auto-24";
+				btnReturn.ToolTip = TITLE;
 				btnReturn.OnClick += e => ToolbarToggle();
             }
             catch (Exception ex)
