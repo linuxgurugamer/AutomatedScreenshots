@@ -9,8 +9,8 @@ This mod will take screenshots at specified intervals.
 The following are the ways that screenshots can be taken:
 
 1.  The intervals can be specified by time in seconds between each screenshot.  
-    The smallest interval allowed is one tenth of a second, so if you really want 
-    to kill your performance and disk, you can specify an interval of 0.1 second
+    The smallest interval allowed is approximately 0.03 sec, if you really want 
+    to kill your performance and disk
 2.  Screenshots can be taken at each scene change
 3.  Screenshots can be taken at special events.
 4.  The UI can be hidden during the screenshots.  Be aware that this will be visible, 

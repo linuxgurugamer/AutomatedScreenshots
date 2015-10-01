@@ -181,9 +181,11 @@ namespace AutomatedScreenshots
 						if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {
 							Log.Info ("Before MainMenuGui.AS_Button.SetTexture on");
 							MainMenuGui.AS_Button.SetTexture (MainMenuGui.AS_button_config);
+
 							Log.Info ("After MainMenuGui.AS_Button.SetTexture");
 						} else {
 							ToolBarActive (true);
+
 						}
 					} else {
 						if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {	
@@ -196,6 +198,8 @@ namespace AutomatedScreenshots
 					}
 						
 					doSnapshots = !doSnapshots;
+					if (!doSnapshots && screenshotTaken && configuration.noGUIOnScreenshot == true && wasUIVisible)
+						GameEvents.onShowUI.Fire ();
 					this.gui.set_AS_Button_active ();
 					ToolBarBusy (AS.configuration.autoSave, AS.doSnapshots);
 					Log.Info ("LoadedScene   doSnapshots: " + doSnapshots.ToString ());
@@ -291,27 +295,32 @@ namespace AutomatedScreenshots
 					        )
 					    )) {
 						Log.Info ("Taking screenshot");
+						Log.Info ("CurrentDirectory: " + System.IO.Directory.GetCurrentDirectory ());
+						Log.Info ("FileOperations.ScreenshotFolder: " + FileOperations.ScreenshotFolder ());
 						snapshotInProgress = true;
 						newScene = false;
 						this.specialScene = false;
 
 						lastUpdate = Time.realtimeSinceStartup;
 						//check if directory doesn't exist
-						if (!System.IO.Directory.Exists (FileOperations.ScreenshotFolder ())) {    
+						if (!System.IO.Directory.Exists (FileOperations.ScreenshotFolder ())) {
+							Log.Info ("Directory does not exist");
 							//if it doesn't, try to create it
 							try {
+								Log.Info ("Trying to create directory");
 								System.IO.Directory.CreateDirectory (FileOperations.ScreenshotFolder ());
 							} catch (Exception e) {
 								Log.Error ("Exception trying to create directory: " + e);
 								return;
 							}
-						}
+							Log.Info ("Directory created");
+						} 
 						do {
 							cnt++;
 							string s = AddInfo (configuration.filename, cnt, sceneReady, specialScene, precrash);
 
-							pngName = configuration.screenshotPath + s + ".png";
-							jpgName = configuration.screenshotPath + s + ".jpg";
+							pngName = System.IO.Path.GetFullPath (FileOperations.ScreenshotFolder ()) + s + ".png";
+							jpgName = System.IO.Path.GetFullPath (FileOperations.ScreenshotFolder ()) + s + ".jpg";
 						} while (System.IO.File.Exists (pngName) || System.IO.File.Exists (jpgName));
 
 						this.precrash = false;

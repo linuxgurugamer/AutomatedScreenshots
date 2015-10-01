@@ -30,3 +30,5 @@
 			Changed minimum time interval from 0.1 to Time.deltaTime (usualy 0.02)
 			Fixed bug where if screenshots were stopped, and there was a png waiting to be converted, and it was
 				deleted, no more screenshots could be taken until the game was restarted
+0.5.3		Fixed bug where if a directory was unwritable, the screen could get locked with the gui hidden
+			Fixed bug where a relative path would not work.
