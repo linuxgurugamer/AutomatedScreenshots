@@ -20,3 +20,13 @@
 			Fixed name of Plugin directory, changed to Plugins
 			Added check for colon in file name, replace it with a dash
 			Updated hour/min/sec time to have leading zeroes
+0.4.1		updated AVC version file
+0.5.0		Added public function for external mods to call to do an automated save
+			Added public funciton for external mods to call to do an automated screenshot
+			Updated zero-padding code for filename to use the ToString() syntax available, save a little codespace
+			Refactored game save code to put all save functions into single class
+0.5.1		Added line to config window to show the activation key for the automated saves.  Not configurable at this time
+0.5.2		Changed from LateUpdate to FixedUpdate, to allow faster screenshots
+			Changed minimum time interval from 0.1 to Time.deltaTime (usualy 0.02)
+			Fixed bug where if screenshots were stopped, and there was a png waiting to be converted, and it was
+				deleted, no more screenshots could be taken until the game was restarted

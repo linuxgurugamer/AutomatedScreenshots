@@ -3,9 +3,10 @@
 #define _UNLIMITED_FILE_ACCESS
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
+using UnityEngine;
+//using System.Collections.Generic;
+//using System.IO;
+//using System.Threading;
 
 
 
@@ -160,8 +161,8 @@ namespace AutomatedScreenshots
 						configuration.filename = "AS-[cnt]";
 
 					configuration.screenshotInterval = float.Parse (SafeLoad(configFileNode.GetValue ("screenshotInterval"),configuration.screenshotInterval));
-					if (configuration.screenshotInterval < 0.1F)
-						configuration.screenshotInterval = 0.1F;
+					if (configuration.screenshotInterval < Time.deltaTime)
+						configuration.screenshotInterval = Time.deltaTime;
 					configuration.convertToJPG = bool.Parse (SafeLoad(configFileNode.GetValue ("convertToJPG"),configuration.convertToJPG));
 					configuration.keepOrginalPNG = bool.Parse (SafeLoad(configFileNode.GetValue ("keepOrginalPNG"),configuration.keepOrginalPNG));
 					configuration.JPGQuality = ushort.Parse (SafeLoad(configFileNode.GetValue ("JPGQuality"),configuration.JPGQuality));
@@ -181,8 +182,8 @@ namespace AutomatedScreenshots
 					configuration.hsAltitudeLimit = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsAltitudeLimit"),configuration.hsAltitudeLimit));
 					configuration.hsMinVerticalSpeed = ushort.Parse (SafeLoad(configFileNode.GetValue ("hsMinVerticalSpeed"),configuration.hsMinVerticalSpeed));
 					configuration.hsScreenshotInterval = float.Parse (SafeLoad(configFileNode.GetValue ("hsScreenshotInterval"),configuration.hsScreenshotInterval));
-					if (configuration.hsScreenshotInterval < 0.1F)
-						configuration.hsScreenshotInterval = 0.1F;
+					if (configuration.hsScreenshotInterval < Time.deltaTime)
+						configuration.hsScreenshotInterval = Time.deltaTime;
 
 					configuration.minBetweenSaves = ushort.Parse(SafeLoad(configFileNode.GetValue ("minBetweenSaves"),configuration.minBetweenSaves));
 					if (configuration.minBetweenSaves <= 0)

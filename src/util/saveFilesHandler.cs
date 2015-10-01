@@ -1,8 +1,6 @@
-
-
 using System;
 using System.IO;
-
+using System.Threading;
 
 namespace AutomatedScreenshots
 {
@@ -18,6 +16,38 @@ namespace AutomatedScreenshots
 
 		ushort numSaveFiles;
 		int fileSaveCnt;
+		private static int saveFileCnt;
+
+		/*
+		 * BackupWork
+		 */
+		public void BackupWork (AS asRef)
+		{
+			SaveFilesHandlers sfh  = new SaveFilesHandlers ();
+
+			// SaveMode is:  OVERWRITE    APPEND   ABORT
+			SaveMode s = SaveMode.OVERWRITE;
+
+			saveFileCnt = FileSaveCnt(KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder) + 1;
+			string saveFileName = AS.AddInfo (AS.configuration.savePrefix, saveFileCnt,	asRef.isSceneReady(), asRef.isSpecialScene(), asRef.isPreCrash());
+
+			string str = GamePersistence.SaveGame (saveFileName, HighLogic.SaveFolder, s);
+			Log.Info ("String: " + str);
+
+			sfh.deleteOldestSaveFile (KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder, AS.configuration.numToRotate, saveFileCnt, saveFileName);
+
+			Log.Info ("backup thread terminated");
+		}
+
+		/*
+		 * startBackup
+		 */
+		public void startBackup (AS asRef)
+		{
+			asRef.backupThread = new Thread (() => BackupWork(asRef));
+			asRef.backupThread.Start ();
+		}
+
 
 		/*
 		 * FileSaveCnt

@@ -3,12 +3,13 @@
 using System;
 using System.Threading;
 using UnityEngine;
-using KSP.IO;
+//using KSP.IO;
 
-using System.Reflection;
+//using System.Reflection;
 
-using KSEA.Historian;
+//using KSEA.Historian;
 
+//using System.Globalization;
 
 namespace AutomatedScreenshots
 {
@@ -34,10 +35,34 @@ namespace AutomatedScreenshots
 		private int cnt = 0;
 		//		private float snapshotInterval = 5.0f;
 		public static bool doSnapshots = false;
+		private static bool doSave = false;
+
 		private bool specialScene = false;
 		private bool precrash = false;
 		private bool newScene = false;
 		private bool sceneReady = false;
+
+		private bool snapshotInProgress = false;
+
+		public bool isSceneReady ()
+		{
+			return sceneReady;
+		}
+
+		public bool isSpecialScene ()
+		{
+			return specialScene;
+		}
+
+		public bool isPreCrash ()
+		{
+			return precrash;
+		}
+
+		public bool isNewScene ()
+		{
+			return newScene;
+		}
 
 		private float lastSceneUpdate = 0.0f;
 		private string pngToConvert = "";
@@ -52,9 +77,20 @@ namespace AutomatedScreenshots
 		private ushort dualScreenshots = 0;
 		public MainMenuGui gui = null;
 		private float lastBackup = 0.0f;
-		private Thread backupThread = null;
+		public Thread backupThread = null;
 
-		int saveFileCnt = 0;
+		//int saveFileCnt = 0;
+
+		public void DoSave ()
+		{
+			doSave = true;
+		}
+
+		public void DoSnapshot ()
+		{
+			doSnapshots = true;
+		}
+
 
 		static AS ()
 		{
@@ -71,6 +107,9 @@ namespace AutomatedScreenshots
 			uiVisiblity = new UICLASS ();
 			uiVisiblity.Awake ();
 			Version.VerifyHistorianVersion ();
+
+			//test t = new test();
+			//t.test1();
 		}
 
 		public void Start ()
@@ -167,7 +206,7 @@ namespace AutomatedScreenshots
 			}
 			
 		}
-
+		#if false
 		public void BackupWork ()
 		{
 			SaveFilesHandlers sfh  = new SaveFilesHandlers ();
@@ -176,7 +215,7 @@ namespace AutomatedScreenshots
 			SaveMode s = SaveMode.OVERWRITE;
 
 			saveFileCnt = sfh.FileSaveCnt(KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder) + 1;
-			string saveFileName = AddInfo (configuration.savePrefix, saveFileCnt);
+			string saveFileName = AddInfo (configuration.savePrefix, saveFileCnt, sceneReady,  specialScene,  precrash);
 
 			string str = GamePersistence.SaveGame (saveFileName, HighLogic.SaveFolder, s);
 			Log.Info ("String: " + str);
@@ -192,22 +231,25 @@ namespace AutomatedScreenshots
 			this.backupThread = new Thread (new ThreadStart (this.BackupWork));
 			this.backupThread.Start ();
 		}
-
-		public void LateUpdate ()
+#endif
+		public void FixedUpdate()
+//		public void LateUpdate ()
 		{
 			string pngName;
 
-			if (AS.configuration.autoSave && ((Time.realtimeSinceStartup - lastBackup) > AS.configuration.minBetweenSaves* 60)) {
+			if (doSave || (AS.configuration.autoSave && ((Time.realtimeSinceStartup - lastBackup) > AS.configuration.minBetweenSaves * 60))) {
 				lastBackup = Time.realtimeSinceStartup;
-				startBackup ();
+				SaveFilesHandlers sfh = new SaveFilesHandlers ();
+				sfh.startBackup (this);
+				doSave = false;
 			}
-			if (doSnapshots) {
+			if (doSnapshots || snapshotInProgress) {
 				Log.Info ("In LateUpdate, doSnapshots");
 				if (screenshotTaken && configuration.noGUIOnScreenshot == true && System.IO.File.Exists (screenshotFile) && wasUIVisible)
 					GameEvents.onShowUI.Fire ();
 				// If there is a png file waiting to be converted, then don't do another screenshot
 				if (pngToConvert != "") {
-					//Log.Info ("pngToConvert: " + pngToConvert);
+					Log.Info ("pngToConvert: " + pngToConvert);
 					if (System.IO.File.Exists (pngToConvert)) {
 						Log.Info ("Converting screenshot to JPG. New name: " + jpgName);
 						ConvertToJPG (pngToConvert, jpgName, configuration.JPGQuality);
@@ -217,15 +259,17 @@ namespace AutomatedScreenshots
 							file.Delete ();
 						}
 						pngToConvert = "";
+						snapshotInProgress = false;
 					}
 				} else {
+					snapshotInProgress = false;
 					if (AS.configuration.precrashSnapshots) {
 						if (FlightGlobals.ActiveVessel != null) {
 							Vessel vessel = FlightGlobals.ActiveVessel;
 
 							if ((-vessel.verticalSpeed > AS.configuration.hsMinVerticalSpeed) &&
-								((FlightGlobals.ship_altitude  / -vessel.verticalSpeed < AS.configuration.secondsUntilImpact) ||
-									(FlightGlobals.ship_altitude  < AS.configuration.hsAltitudeLimit)
+							    ((FlightGlobals.ship_altitude / -vessel.verticalSpeed < AS.configuration.secondsUntilImpact) ||
+							    (FlightGlobals.ship_altitude < AS.configuration.hsAltitudeLimit)
 							    )) {
 
 								if (Time.realtimeSinceStartup - lastPrecrashUpdate > configuration.hsScreenshotInterval) {
@@ -233,8 +277,8 @@ namespace AutomatedScreenshots
 									lastPrecrashUpdate = Time.realtimeSinceStartup;
 
 									Log.Info ("vessel.verticalSpeed: " + vessel.verticalSpeed.ToString ());
-									Log.Info ("FlightGlobals.ship_altitude: " + FlightGlobals.ship_altitude .ToString ());
-									Log.Info ("FlightGlobals.ship_altitude  / -vessel.verticalSpeed: " + (FlightGlobals.ship_altitude  / -vessel.verticalSpeed).ToString ());
+									Log.Info ("FlightGlobals.ship_altitude: " + FlightGlobals.ship_altitude.ToString ());
+									Log.Info ("FlightGlobals.ship_altitude  / -vessel.verticalSpeed: " + (FlightGlobals.ship_altitude / -vessel.verticalSpeed).ToString ());
 								}
 							}
 						}
@@ -242,11 +286,12 @@ namespace AutomatedScreenshots
 
 					if (this.specialScene || this.precrash || dualScreenshots == 1 ||
 					    ( /*AS.configuration.screenshotAtIntervals && */
-					    ((this.newScene && this.sceneReady && Time.realtimeSinceStartup - lastSceneUpdate > 1) ||
-					    ((Time.realtimeSinceStartup - lastUpdate) > configuration.screenshotInterval)
-					    )
+					        ((this.newScene && this.sceneReady && Time.realtimeSinceStartup - lastSceneUpdate > 1) ||
+					        ((Time.realtimeSinceStartup - lastUpdate) > configuration.screenshotInterval)
+					        )
 					    )) {
 						Log.Info ("Taking screenshot");
+						snapshotInProgress = true;
 						newScene = false;
 						this.specialScene = false;
 
@@ -263,7 +308,7 @@ namespace AutomatedScreenshots
 						}
 						do {
 							cnt++;
-							string s = AddInfo (configuration.filename, cnt);
+							string s = AddInfo (configuration.filename, cnt, sceneReady, specialScene, precrash);
 
 							pngName = configuration.screenshotPath + s + ".png";
 							jpgName = configuration.screenshotPath + s + ".jpg";
@@ -538,14 +583,14 @@ namespace AutomatedScreenshots
 		//
 		// Following taken from SensibleScreenshot
 		//
-		public string ConvertDateString ()
+		private static string ConvertDateString ()
 		{
 			string dateFormat = "yyyy-MM-dd--HH-mm-ss";
 
 			return DateTime.Now.ToString (dateFormat);
 		}
 
-		public int[] ConvertUT (double UT)
+		private static int[] ConvertUT (double UT)
 		{
 			double time = UT;
 			int[] ret = { 0, 0, 0, 0, 0 };
@@ -562,12 +607,12 @@ namespace AutomatedScreenshots
 			return ret; 
 		}
 
-		public string AddInfo (string original, int cnt)
+		public static string AddInfo (string original, int cnt, bool sceneReady = false, bool specialScene = false, bool precrash = false)
 		{
 			string f = original;
 			Log.Info ("AddInfo: original: " + original);
 			if (f.Contains (":")) {
-				f = f.Replace(":", "-");
+				f = f.Replace (":", "-");
 			}
 			if (f.Contains ("[cnt]")) {
 				Log.Info ("Contains [cnt]");
@@ -624,29 +669,29 @@ namespace AutomatedScreenshots
 			if (Planetarium.fetch != null)
 				times = ConvertUT (Planetarium.GetUniversalTime ());
 			if (f.Contains ("[year]")) {
-				string time = times [0].ToString ();
+				string time = times [0].ToString ("D4");
 				f = f.Replace ("[year]", time);
 			}
 			if (f.Contains ("[day]")) {
-				string time = times [1].ToString ();
+				string time = times [1].ToString ("D2");
 				f = f.Replace ("[day]", time);
 			}
 			if (f.Contains ("[hour]")) {
-				string time = times [2].ToString ();
-				if (time.Length == 1)
-					time = "0" + time;
+				string time = times [2].ToString ("D2");
+				//if (time.Length == 1)
+				//	time = "0" + time;
 				f = f.Replace ("[hour]", time);
 			}
 			if (f.Contains ("[min]")) {
-				string time = times [3].ToString ();
-				if (time.Length == 1)
-					time = "0" + time;
+				string time = times [3].ToString ("D2");
+				//if (time.Length == 1)
+				//	time = "0" + time;
 				f = f.Replace ("[min]", time);
 			}
 			if (f.Contains ("[sec]")) {
-				string time = times [4].ToString ();
-				if (time.Length == 1)
-					time = "0" + time;
+				string time = times [4].ToString ("D2");
+				//if (time.Length == 1)
+				//	time = "0" + time;
 				f = f.Replace ("[sec]", time);
 			}
 
@@ -670,5 +715,50 @@ namespace AutomatedScreenshots
 			return f;
 		}
 	}
+
+
+#if false
+//string comparision ignoring case
+
+//First example:
+
+public static class StringExtensions
+{
+	public static bool Contains (this string source, string toCheck, StringComparison comp)
+	{
+		return source.IndexOf (toCheck, comp) >= 0;
+	}
+}
+public class test
+{
+
+
+	public static void test1 ()
+	{
+		string title = "STRING";
+		bool contains = title.Contains ("string", StringComparison.OrdinalIgnoreCase);
+	}
 }
 
+
+class test
+{
+	string AddInfo (string original, string caller, int cnt, Func<string, string> callbackFunc = null)
+	{
+		string str = callbackFunc (original);
+		return str;
+	}
+	string callbackFunc(string str) 
+	{
+		return str;
+	}
+	public  void test1()
+	{
+		string a;
+		a = "abcde";
+		Log.Info("test1: " + AddInfo(a, "test", 0, callbackFunc));
+	}
+		
+}
+	#endif
+}

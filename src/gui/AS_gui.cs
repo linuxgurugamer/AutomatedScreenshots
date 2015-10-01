@@ -1,7 +1,7 @@
 ﻿
 using System;
 using UnityEngine;
-using System.IO;
+//using System.IO;
 
 
 
@@ -344,6 +344,11 @@ namespace AutomatedScreenshots
 
 			DrawTitle("Automatic Save Settings");
 
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Activation Key (not configurable):");
+			GUILayout.FlexibleSpace ();
+			GUILayout.Label ("Ctrl-F5");
+			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("Minutes between saves:");
@@ -423,8 +428,8 @@ namespace AutomatedScreenshots
 		{
 //			AS.configuration.screenshotAtIntervals = newScreenshotAtIntervals;
 			AS.configuration.screenshotInterval = newInterval;
-			if (AS.configuration.screenshotInterval < 0.1F)
-				AS.configuration.screenshotInterval = 0.1F;
+			if (AS.configuration.screenshotInterval < Time.deltaTime)
+				AS.configuration.screenshotInterval = Time.deltaTime;
 			AS.configuration.convertToJPG = newConvertToJPG;
 			AS.configuration.keepOrginalPNG = newKeepOrginalPNG;
 			if (newScreenshotPath [newScreenshotPath.Length - 1] != '/' && newScreenshotPath [newScreenshotPath.Length - 1] != '\\')
