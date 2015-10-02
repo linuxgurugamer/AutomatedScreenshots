@@ -12,6 +12,7 @@ namespace AutomatedScreenshots
 		private static readonly Configuration instance = new Configuration ();
 
 		private static readonly String FILE_NAME = "AutomatedScreenshot.dat";
+		public  ushort MAX_SUPERSIZE = 4;
 
 		[Persistent] public Log.LEVEL logLevel { get; set; }
 
@@ -35,6 +36,8 @@ namespace AutomatedScreenshots
 		public ushort hsAltitudeLimit { get; set; }
 		public ushort hsMinVerticalSpeed { get; set; }
 		public float hsScreenshotInterval { get; set; }
+
+		public ushort supersize { get; set; }
 
 		internal Boolean BlizzyToolbarIsAvailable = false;
 
@@ -76,6 +79,8 @@ namespace AutomatedScreenshots
 			hsAltitudeLimit = 25;
 			hsMinVerticalSpeed = 3;
 			hsScreenshotInterval = 0.2F;
+
+			supersize = 0;
 
 			autoSave = false;
 			minBetweenSaves = 5;

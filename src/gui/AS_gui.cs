@@ -54,6 +54,10 @@ namespace AutomatedScreenshots
 		private static string hsMinVerticalSpeed = "";
 		private static string hsScreenshotInterval = "";
 
+
+		private static string strsupersize = "";
+		private ushort newsupersize;
+
 		private bool newautoSave;
 		private ushort newminBetweenSaves;
 		private string minBetweenSaves;
@@ -198,6 +202,9 @@ namespace AutomatedScreenshots
 				hsMinVerticalSpeed = AS.configuration.hsMinVerticalSpeed.ToString();
 				hsScreenshotInterval = AS.configuration.hsScreenshotInterval.ToString();
 
+				newsupersize = AS.configuration.supersize;
+				strsupersize = AS.configuration.supersize.ToString();
+
 				newautoSave = AS.configuration.autoSave;
 				newminBetweenSaves = AS.configuration.minBetweenSaves;
 				minBetweenSaves = AS.configuration.minBetweenSaves.ToString ();
@@ -242,28 +249,34 @@ namespace AutomatedScreenshots
 			newKeepOrginalPNG = GUILayout.Toggle (newKeepOrginalPNG, "");
 			GUILayout.EndHorizontal ();
 
+
 			GUILayout.BeginHorizontal ();
-			GUILayout.Label ("Screenshot path:");
+			GUILayout.Label ("JPEG Quality (1-100):");
 			GUILayout.FlexibleSpace ();
+			JPGQuality = GUILayout.TextField (JPGQuality, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
 			GUILayout.EndHorizontal ();
 
 
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Supersize images (0-4):");
+			GUILayout.FlexibleSpace ();
+			strsupersize = GUILayout.TextField (strsupersize, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
+			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Screenshot path:");
 			GUILayout.FlexibleSpace ();
-			newScreenshotPath = GUILayout.TextField (newScreenshotPath, GUILayout.MinWidth (50F), GUILayout.MaxWidth (300F));
+//			GUILayout.EndHorizontal ();
+
+//			GUILayout.BeginHorizontal ();
+//			GUILayout.FlexibleSpace ();
+			newScreenshotPath = GUILayout.TextField (newScreenshotPath, GUILayout.MinWidth (50F), GUILayout.MaxWidth (250F));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("Filename Format:");
 			GUILayout.FlexibleSpace ();
 			newFilename = GUILayout.TextField (newFilename, GUILayout.MinWidth (30F), GUILayout.MaxWidth (160F));
-			GUILayout.EndHorizontal ();
-
-			GUILayout.BeginHorizontal ();
-			GUILayout.Label ("JPEG Quality (1-100):");
-			GUILayout.FlexibleSpace ();
-			JPGQuality = GUILayout.TextField (JPGQuality, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
@@ -401,6 +414,14 @@ namespace AutomatedScreenshots
 			} catch (Exception ) {
 			} finally {	}
 
+			try {
+				newsupersize = Convert.ToUInt16(strsupersize);
+				if (newsupersize < 0 )
+					newsupersize = 0;
+				if (newsupersize > AS.configuration.MAX_SUPERSIZE )
+					newsupersize = AS.configuration.MAX_SUPERSIZE;
+			} catch (Exception ) {
+			} finally {	}
 
 			try {
 				newminBetweenSaves = Convert.ToUInt16(minBetweenSaves);
@@ -453,6 +474,8 @@ namespace AutomatedScreenshots
 			AS.configuration.hsAltitudeLimit = newhsAltitudeLimit;
 			AS.configuration.hsMinVerticalSpeed = newhsMinVerticalSpeed;
 			AS.configuration.hsScreenshotInterval = newhsScreenshotInterval;
+
+			AS.configuration.supersize = newsupersize;
 
 			AS.configuration.minBetweenSaves = newminBetweenSaves;
 			AS.configuration.savePrefix = newsavePrefix;

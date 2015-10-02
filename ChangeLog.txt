@@ -32,3 +32,4 @@
 				deleted, no more screenshots could be taken until the game was restarted
 0.5.3		Fixed bug where if a directory was unwritable, the screen could get locked with the gui hidden
 			Fixed bug where a relative path would not work.
+0.6.0		Added ability to supersize screenshots

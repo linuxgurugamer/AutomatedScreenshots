@@ -347,7 +347,10 @@ namespace AutomatedScreenshots
 						// If Historian is available, then tell it to activate
 						//
 						Version.set_m_Active ();
-						Application.CaptureScreenshot (pngName);
+						// Change second number for supersize.  If non-zero,
+						// then multiplies the resolution by that number
+						// Must be an integer
+						Application.CaptureScreenshot (pngName, configuration.supersize);
 
 						if (configuration.convertToJPG) {
 							pngToConvert = pngName;

@@ -102,6 +102,8 @@ namespace AutomatedScreenshots
 			configFileNode.SetValue ("hsMinVerticalSpeed", configuration.hsMinVerticalSpeed.ToString (), true);
 			configFileNode.SetValue ("hsScreenshotInterval", configuration.hsScreenshotInterval.ToString (), true);
 
+			configFileNode.SetValue ("supersize", configuration.supersize.ToString (), true);
+
 			configFileNode.SetValue ("minBetweenSaves", configuration.minBetweenSaves.ToString (), true);
 			configFileNode.SetValue ("saveFilePrefix", configuration.savePrefix, true);
 			configFileNode.SetValue ("maxSaveFiles", configuration.numToRotate.ToString (), true);
@@ -185,6 +187,12 @@ namespace AutomatedScreenshots
 					if (configuration.hsScreenshotInterval < Time.deltaTime)
 						configuration.hsScreenshotInterval = Time.deltaTime;
 
+					configuration.supersize = ushort.Parse(SafeLoad(configFileNode.GetValue ("supersize"),configuration.supersize));
+					if (configuration.supersize < 0 )
+						configuration.supersize = 0;
+					if (configuration.supersize > configuration.MAX_SUPERSIZE )
+						configuration.supersize = configuration.MAX_SUPERSIZE;
+					
 					configuration.minBetweenSaves = ushort.Parse(SafeLoad(configFileNode.GetValue ("minBetweenSaves"),configuration.minBetweenSaves));
 					if (configuration.minBetweenSaves <= 0)
 						configuration.minBetweenSaves = 5;
