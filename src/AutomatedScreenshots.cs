@@ -65,6 +65,7 @@ namespace AutomatedScreenshots
 		}
 
 		private float lastSceneUpdate = 0.0f;
+		private float sceneReadyAt = 0.0f;
 		private string pngToConvert = "";
 		private string jpgName = "";
 		private bool screenshotTaken = false;
@@ -288,12 +289,23 @@ namespace AutomatedScreenshots
 						}
 					}
 
-					if (this.specialScene || this.precrash || dualScreenshots == 1 ||
+					if ((this.specialScene && !this.newScene) || this.precrash || dualScreenshots == 1 ||
 					    ( /*AS.configuration.screenshotAtIntervals && */
-					        ((this.newScene && this.sceneReady && Time.realtimeSinceStartup - lastSceneUpdate > 1) ||
-					        ((Time.realtimeSinceStartup - lastUpdate) > configuration.screenshotInterval)
+							((this.newScene && (this.sceneReady && Time.realtimeSinceStartup - sceneReadyAt > 0.1)  && Time.realtimeSinceStartup - lastSceneUpdate > 1) ||
+								((Time.realtimeSinceStartup - lastUpdate) > configuration.screenshotInterval && !this.newScene)
 					        )
 					    )) {
+
+						Log.Info ("this.specialScene: " + this.specialScene.ToString ());
+						Log.Info ("this.precrash: " + this.precrash.ToString ());
+						Log.Info ("dualScreenshots: " + dualScreenshots.ToString ());
+						Log.Info ("this.newScene: " + this.newScene.ToString ());
+						Log.Info ("this.sceneReady: " + this.sceneReady.ToString ());
+						Log.Info ("Time.realtimeSinceStartup - sceneReadyAt: " + (Time.realtimeSinceStartup - sceneReadyAt).ToString ());
+						Log.Info ("Time.realtimeSinceStartup - lastSceneUpdate: " + (Time.realtimeSinceStartup - lastSceneUpdate).ToString ());
+						Log.Info ("Time.realtimeSinceStartup - lastUpdate: " + (Time.realtimeSinceStartup - lastUpdate).ToString ());
+
+
 						Log.Info ("Taking screenshot");
 						Log.Info ("CurrentDirectory: " + System.IO.Directory.GetCurrentDirectory ());
 						Log.Info ("FileOperations.ScreenshotFolder: " + FileOperations.ScreenshotFolder ());
@@ -380,7 +392,7 @@ namespace AutomatedScreenshots
 				GameEvents.onLevelWasLoaded.Add (this.CallbackLevelWasLoaded);
 			} else {
 				GameEvents.onGameSceneLoadRequested.Remove (this.CallbackGameSceneLoadRequested);
-				GameEvents.onLevelWasLoaded.Remove (this.CallbackLevelWasLoaded);
+				GameEvents.onLevelWasLoadedGUIReady.Remove (this.CallbackLevelWasLoaded);
 			}
 		}
 
@@ -458,6 +470,7 @@ namespace AutomatedScreenshots
 			Log.Info ("CallbackLevelWasLoaded");
 			this.sceneReady = true;
 			lastSceneUpdate = Time.realtimeSinceStartup;
+			sceneReadyAt = Time.realtimeSinceStartup;
 		}
 
 		private void CallbackOnVesselChange (Vessel evt)
@@ -606,10 +619,11 @@ namespace AutomatedScreenshots
 		{
 			double time = UT;
 			int[] ret = { 0, 0, 0, 0, 0 };
-			ret [0] = (int)Math.Floor (time / (KSPUtil.Year)) + 1; //year
-			time %= (KSPUtil.Year);
-			ret [1] = (int)Math.Floor (time / KSPUtil.Day) + 1; //days
-			time %= (KSPUtil.Day);
+
+			ret [0] = (int)Math.Floor (time / (KSPUtil.dateTimeFormatter.Year)) + 1; //year
+			time %= (KSPUtil.dateTimeFormatter.Year);
+			ret [1] = (int)Math.Floor (time / KSPUtil.dateTimeFormatter.Day) + 1; //days
+			time %= (KSPUtil.dateTimeFormatter.Day);
 			ret [2] = (int)Math.Floor (time / (3600)); //hours
 			time %= (3600);
 			ret [3] = (int)Math.Floor (time / (60)); //minutes
