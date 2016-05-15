@@ -382,6 +382,16 @@ namespace AutomatedScreenshots
 			RegisterSceneChanges (AS.configuration.screenshotOnSceneChange);
 			RegisterSpecialEvents (AS.configuration.onSpecialEvent);
 			changeCallbacks = false;
+			GameEvents.onGameStateLoad.Add (setAutosave);
+		}
+
+		void setAutosave(ConfigNode evt)
+		{
+			Log.Info ("setAutosave");
+			AS.configuration.autoSave = AS.configuration.autoSaveOnGameStart;
+			gui.OnGUIApplicationLauncherReady();
+			gui.set_AS_Button_active ();
+			ToolBarBusy (AS.configuration.autoSave, AS.doSnapshots);
 		}
 
 		private void RegisterSceneChanges (bool  enable)

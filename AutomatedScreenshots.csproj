@@ -20,9 +20,7 @@
     <ConsolePause>false</ConsolePause>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xcopy ${TargetFile}  R:\KSP_1.0.5_Dev\GameData\AutomatedScreenShots\Plugins\  /Y" externalConsole="True" />
-        <Command type="AfterBuild" command="xcopy ${ProjectDir}\src\Textures\*  R:\KSP_1.0.5_Dev\GameData\AutomatedScreenShots\Textures /Y" externalConsole="True" pauseExternalConsole="True" />
-        <Command type="AfterBuild" command="xcopy $(TargetDir)\AutomatedScreenshots.pdb  R:\KSP_1.0.5_Dev\GameData\AutomatedScreenShots\Plugins\  /Y" workingdir="" />
+        <Command type="AfterBuild" command="deploy.bat" externalConsole="True" pauseExternalConsole="True" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -115,5 +113,6 @@
     <None Include="src\Textures\Auto-snapshot-38.png" />
     <None Include="src\Textures\Auto-snapshot-save-24.png" />
     <None Include="src\Textures\Auto-snapshot-save-38.png" />
+    <None Include="deploy.bat" />
   </ItemGroup>
 </Project>

@@ -48,6 +48,7 @@ namespace AutomatedScreenshots
 		public ushort minBetweenSaves;
 		public string savePrefix;
 		public ushort numToRotate;
+		public bool autoSaveOnGameStart;
 	//	public string toggleAutoSave;
 
 		public Configuration ()
@@ -86,6 +87,7 @@ namespace AutomatedScreenshots
 			minBetweenSaves = 5;
 			savePrefix = "rotate-[cnt]";
 			numToRotate = 15;
+			autoSaveOnGameStart = false;
 			//toggleAutoSave = "Ctrl-F5";
 		}
 

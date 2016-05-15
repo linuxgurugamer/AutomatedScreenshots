@@ -73,6 +73,8 @@ namespace AutomatedScreenshots
 		public /* static*/ void  ToolBarBusy(bool autoSave, bool doSnapshots)
 		{
 			Log.Info ("ToolBarBusy:  autoSave: " + autoSave.ToString () + "    doSnapshot: " + doSnapshots.ToString ());
+			if (btnReturn == null)
+				return;
 			if (doSnapshots == false && autoSave == false)
 				btnReturn.TexturePath = TEXTURE_DIR + "Auto-24";
 				//AS_Button.SetTexture (AS_button_off);

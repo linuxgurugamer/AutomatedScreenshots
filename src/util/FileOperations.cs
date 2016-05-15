@@ -108,6 +108,7 @@ namespace AutomatedScreenshots
 			configFileNode.SetValue ("saveFilePrefix", configuration.savePrefix, true);
 			configFileNode.SetValue ("maxSaveFiles", configuration.numToRotate.ToString (), true);
 
+			configFileNode.SetValue ("autoSaveOnGameStart", configuration.autoSaveOnGameStart.ToString (), true);
 
 			configuration.keycode = AS.setActiveKeycode (configuration.keycode.ToString ()).ToString ();
 
@@ -202,6 +203,9 @@ namespace AutomatedScreenshots
 					configuration.numToRotate = ushort.Parse(SafeLoad(configFileNode.GetValue ("maxSaveFiles"),configuration.numToRotate));
 					if (configuration.numToRotate <= 0)
 						configuration.numToRotate = 15;
+					
+					configuration.autoSaveOnGameStart =
+						bool.Parse (SafeLoad(configFileNode.GetValue ("autoSaveOnGameStart"),configuration.autoSaveOnGameStart));
 				}
 			}
 		}

@@ -64,6 +64,7 @@ namespace AutomatedScreenshots
 		private string newsavePrefix;
 		private ushort newnumToRotate;
 		private string numToRotate;
+		private bool newautoSaveOnGameStart;
 
 		internal MainMenuGui ()
 		{
@@ -211,6 +212,7 @@ namespace AutomatedScreenshots
 				newsavePrefix = AS.configuration.savePrefix;
 				newnumToRotate = AS.configuration.numToRotate;
 				numToRotate = AS.configuration.numToRotate.ToString ();
+				newautoSaveOnGameStart = AS.configuration.autoSaveOnGameStart;
 			} 
 
 			SetVisible (true);
@@ -378,6 +380,14 @@ namespace AutomatedScreenshots
 			numToRotate = GUILayout.TextField (numToRotate, GUILayout.MinWidth (30.0F), GUILayout.MaxWidth (30.0F));
 			GUILayout.EndHorizontal ();
 
+			GUILayout.BeginHorizontal ();
+			GUILayout.Label ("Autosave on at game start:");
+			GUILayout.FlexibleSpace ();
+			newautoSaveOnGameStart = GUILayout.Toggle (newautoSaveOnGameStart, "");
+			GUILayout.EndHorizontal ();
+
+
+
 			GUILayout.EndVertical ();
 			GUILayout.EndArea ();
 
@@ -432,7 +442,7 @@ namespace AutomatedScreenshots
 				newnumToRotate = Convert.ToUInt16(numToRotate);
 			} catch (Exception ) {
 			} finally {	}
-
+				
 			GUI.DragWindow ();
 
 		}
@@ -480,12 +490,15 @@ namespace AutomatedScreenshots
 			AS.configuration.minBetweenSaves = newminBetweenSaves;
 			AS.configuration.savePrefix = newsavePrefix;
 			AS.configuration.numToRotate = newnumToRotate;
+			AS.configuration.autoSaveOnGameStart = newautoSaveOnGameStart;
 		}
 
 		public void set_AS_Button_active()
 		{
 			Log.Info ("set_AS_Button_active   AS.doSnapshots: " + AS.doSnapshots.ToString() + "   AS.configuration.autoSave: " + AS.configuration.autoSave.ToString() );
 			if (!AS.configuration.useBlizzyToolbar) {
+				if (AS_Button == null)
+					Log.Info ("AS_Button == null");
 				if (AS.doSnapshots == false && AS.configuration.autoSave == false)
 					AS_Button.SetTexture (AS_button_off);
 				if (AS.doSnapshots == true && AS.configuration.autoSave == false)
