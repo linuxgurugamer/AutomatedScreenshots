@@ -16,8 +16,8 @@ namespace AutomatedScreenshots
 	{
 		public static readonly String ROOT_PATH = KSPUtil.ApplicationRootPath;
 		private static readonly String CONFIG_BASE_FOLDER = ROOT_PATH + "GameData/";
-		private static String AS_BASE_FOLDER = CONFIG_BASE_FOLDER + "AutomatedScreenshots/";
-		private static String AS_NODENAME = "AutomatedScreenshots";
+		private static String AS_BASE_FOLDER = CONFIG_BASE_FOLDER + "AutomatedScreenShots/";
+		private static String AS_NODENAME = "AutomatedScreenShots";
 		private static String AS_CFG_FILE = AS_BASE_FOLDER + "AS_Settings.cfg";
 
 		private static ConfigNode configFile = null;
