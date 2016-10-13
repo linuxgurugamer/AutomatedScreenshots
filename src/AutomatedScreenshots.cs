@@ -18,9 +18,8 @@ namespace AutomatedScreenshots
 	{
 		show = 0,
 		hide,
-		both}
-
-	;
+		both
+    };
 
 	[KSPAddon (KSPAddon.Startup.MainMenu, true)]
 	public partial class AS : MonoBehaviour
@@ -118,7 +117,9 @@ namespace AutomatedScreenshots
 
 			Log.Info ("Start");
 			DontDestroyOnLoad (this);
-			configuration.Load ();
+            FileOperations.MoveCfgToDataDir();
+
+            configuration.Load ();
 #if (DEBUG)
 			Log.SetLevel (Log.LEVEL.INFO);
 #else
@@ -528,7 +529,7 @@ namespace AutomatedScreenshots
 			//lastSceneUpdate = Time.realtimeSinceStartup;
 		}
 
-		private void CallbackPartJointWasLoaded (PartJoint partjoint)
+		private void CallbackPartJointWasLoaded (PartJoint partjoint, float f)
 		{
 			Log.Info ("CallbackPartJointWasLoaded");
 			//this.newScene = true;

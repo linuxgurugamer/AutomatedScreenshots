@@ -1,6 +1,6 @@
 ﻿Rem unusable line
 
-set H=R:\KSP_1.1.2_dev
+set H=R:\KSP_1.1.4_dev
 echo %H%
 
 set d=%H%
@@ -23,6 +23,10 @@ set d=%H%\Gamedata\AutomatedScreenShots\Textures
 if exist %d% goto five
 mkdir %d%
 :five
+set d=%H%\Gamedata\AutomatedScreenShots\PluginData
+if exist %d% goto six
+mkdir %d%
+:six
 
 
 

@@ -14,7 +14,7 @@ namespace AutomatedScreenshots
 		private const string _tooltipOff = "Show AutomatedScreenshots & Saves";
 		public const string TEXTURE_DIR = "AutomatedScreenshots/Textures/";
 
-		public void setToolbarButtonVisibility(bool v)
+        public void setToolbarButtonVisibility(bool v)
 		{
 
 			btnReturn.Visible = v;

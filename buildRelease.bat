@@ -46,6 +46,10 @@ if exist %d% goto five
 mkdir %d%
 :five
 del %HOMEDIR%\install\Gamedata\AutomatedScreenShots\Textures\*.*
+set d=%HOMEDIR%\install\Gamedata\AutomatedScreenShots\PluginData
+if exist %d% goto six
+mkdir %d%
+:six
 
 rem xcopy src\Textures\AS*.* %HOMEDIR%\install\Gamedata\AutomatedScreenShots\Textures /y
 xcopy src\Textures\Auto*.png   %HOMEDIR%\install\GameData\AutomatedScreenShots\Textures /Y

@@ -3,6 +3,7 @@
 #define _UNLIMITED_FILE_ACCESS
 
 using System;
+using System.IO;
 using UnityEngine;
 //using System.Collections.Generic;
 //using System.IO;
@@ -18,13 +19,35 @@ namespace AutomatedScreenshots
 		private static readonly String CONFIG_BASE_FOLDER = ROOT_PATH + "GameData/";
 		private static String AS_BASE_FOLDER = CONFIG_BASE_FOLDER + "AutomatedScreenShots/";
 		private static String AS_NODENAME = "AutomatedScreenShots";
-		private static String AS_CFG_FILE = AS_BASE_FOLDER + "AS_Settings.cfg";
+        private static String AS_CFG_FILE = AS_BASE_FOLDER + "PluginData/AS_Settings.cfg";
+        private static String AS_OLD_CFG_FILE = AS_BASE_FOLDER + "AS_Settings.cfg";
 
-		private static ConfigNode configFile = null;
+
+        private static ConfigNode configFile = null;
 		private static ConfigNode configFileNode = null;
 
 
-		public static String ScreenshotFolder ()
+        public static void MoveCfgToDataDir()
+        {
+            if (File.Exists(AS_OLD_CFG_FILE))
+            {
+                if (!File.Exists(AS_CFG_FILE))
+                {
+                    try
+                    {
+                        File.Copy(AS_OLD_CFG_FILE, AS_CFG_FILE);
+                        File.Delete(AS_OLD_CFG_FILE);
+                    }
+                    catch (Exception e)
+                    { }
+                }
+            }
+            else
+                File.Delete(AS_OLD_CFG_FILE);
+        }
+
+
+        public static String ScreenshotFolder ()
 		{
 			String folder = AS.configuration.screenshotPath;
 			return folder;
