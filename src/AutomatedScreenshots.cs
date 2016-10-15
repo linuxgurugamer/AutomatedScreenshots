@@ -168,14 +168,15 @@ namespace AutomatedScreenshots
 			}
 
 			if ((Input.GetKey (KeyCode.RightControl) || Input.GetKey (KeyCode.LeftControl)) &&
-			    Input.GetKeyDown (KeyCode.F5)) {
+			    Input.GetKeyDown (KeyCode.F6)) {
 				AS.configuration.autoSave = !AS.configuration.autoSave;
 				this.gui.set_AS_Button_active ();
 				ToolBarBusy (AS.configuration.autoSave, AS.doSnapshots);
 				Log.Info ("AutoSave: " + AS.configuration.autoSave.ToString ());
 			}
 
-			if (Input.GetKeyDown (activeKeycode)) {
+			if (Input.GetKeyDown (activeKeycode) && !(Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftControl)))
+            {
 				Log.Info ("Update:     GameScene: " + HighLogic.LoadedScene.ToString ());
 				if (HighLogic.LoadedScene != GameScenes.MAINMENU) {
 					Log.Info ("KeyCode: " + activeKeycode.ToString () + " pressed");

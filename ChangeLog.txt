@@ -39,3 +39,4 @@
 
 0.7.4		Updated for 1.2
 			Moved config file into PluginData
+			Changed toggle for autosave from ctrl-F5 to ctrl-F6

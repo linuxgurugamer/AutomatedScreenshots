@@ -88,7 +88,7 @@ namespace AutomatedScreenshots
 			savePrefix = "rotate-[cnt]";
 			numToRotate = 15;
 			autoSaveOnGameStart = false;
-			//toggleAutoSave = "Ctrl-F5";
+			//toggleAutoSave = "Ctrl-F6";
 		}
 
 		public static Configuration Instance {

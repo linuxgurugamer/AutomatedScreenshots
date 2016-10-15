@@ -362,7 +362,7 @@ namespace AutomatedScreenshots
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("Activation Key (not configurable):");
 			GUILayout.FlexibleSpace ();
-			GUILayout.Label ("Ctrl-F5");
+			GUILayout.Label ("Ctrl-F6");
 			GUILayout.EndHorizontal ();
 
 			GUILayout.BeginHorizontal ();
