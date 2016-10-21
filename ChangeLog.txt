@@ -38,5 +38,8 @@
 0.7.3		Fixed case issue in file names, only a problem on Linux & OSX
 
 0.7.4		Updated for 1.2
-			Moved config file into PluginData
+			
 			Changed toggle for autosave from ctrl-F5 to ctrl-F6
+
+0.7.5		Moved config file into PluginData
+0.7.6		Fixed problem with ToolbarWrapper.cs
