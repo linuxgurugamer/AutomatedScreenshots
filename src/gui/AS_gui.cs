@@ -9,6 +9,8 @@ namespace AutomatedScreenshots
 {
 	public class MainMenuGui : MonoBehaviour
 	{
+        public static MainMenuGui Instance;
+
 		private const int WIDTH = 725;
 		private const int HEIGHT = 425;
 		private Rect bounds = new Rect (Screen.width / 2 - WIDTH / 2, Screen.height / 2 - HEIGHT / 2, WIDTH, HEIGHT);
@@ -68,7 +70,7 @@ namespace AutomatedScreenshots
 
 		internal MainMenuGui ()
 		{
-			
+            Instance = this;
 			blizzyToolbarInstalled = ToolbarManager.ToolbarAvailable;
 		}
 
@@ -128,10 +130,10 @@ namespace AutomatedScreenshots
 			if (AS_Button == null && !appLaucherHidden) {
 				Log.Info ("AS_Button == null");
 				
-				AS_Button = ApplicationLauncher.Instance.AddModApplication (GUIToggle, GUIToggle,
+				AS_Button = ApplicationLauncher.Instance.AddModApplication (GUIToggle, GUIToggleFalse,
 					null, null,
 					null, null,
-					ApplicationLauncher.AppScenes.ALWAYS,
+					ApplicationLauncher.AppScenes.ALWAYS & ~ApplicationLauncher.AppScenes.MAINMENU,
 						//ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH,
 					AS_button_off);
 				Log.Info ("Added");
@@ -510,7 +512,13 @@ namespace AutomatedScreenshots
 			}
 		}
 
-		public void GUIToggle ()
+        public void GUIToggleFalse()
+        {
+            if (ASInfoDisplay.infoDisplayActive)
+                GUIToggle();
+        }
+
+        public void GUIToggle ()
 		{
 			Log.Info ("GUIToggle");
 			ASInfoDisplay.infoDisplayActive = !ASInfoDisplay.infoDisplayActive;

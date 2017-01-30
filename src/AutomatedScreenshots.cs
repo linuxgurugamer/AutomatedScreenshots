@@ -107,11 +107,20 @@ namespace AutomatedScreenshots
 			uiVisiblity = new UICLASS ();
 			uiVisiblity.Awake ();
 			Version.VerifyHistorianVersion ();
+            GameEvents.onGUIApplicationLauncherUnreadifying.Add(hideNow);
 
-			//test t = new test();
-			//t.test1();
-		}
 
+            
+
+            //test t = new test();
+            //t.test1();
+        }
+
+        public void hideNow(GameScenes scene)
+        {
+            if (MainMenuGui.Instance != null)
+                MainMenuGui.Instance.GUIToggleFalse();
+        }
 		public void Start ()
 		{
 
