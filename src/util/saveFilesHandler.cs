@@ -196,9 +196,15 @@ namespace AutomatedScreenshots
 					string f = path + "/" + fileList [FILENAME_OFFSET + i - 1] + ".sfs";
 					if (File.Exists (f)) { 
 						File.Delete (f);
-					}	
-				} 
-				numSaveFiles = maxSaveFiles;
+					}
+                    f = path + "/" + fileList[FILENAME_OFFSET + i - 1] + ".loadmeta";
+                    if (File.Exists(f))
+                    {
+                        File.Delete(f);
+                    }
+
+                }
+                numSaveFiles = maxSaveFiles;
 
 			} else {
 				if (newFile != "") {

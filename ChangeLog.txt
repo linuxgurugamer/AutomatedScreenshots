@@ -48,3 +48,5 @@
 0.7.8		Added AssemblyVersion updating code
 			Fixed window showing up on the main menu after being in a game
 			Fixed toolbar button showing up on the main menu
+0.7.9
+			Now deletes the loadmeta file as well as the sfs file
