@@ -1,6 +1,6 @@
 ﻿Rem unusable line
 
-set H=R:\KSP_1.2.2_dev
+set H=R:\KSP_1.3.0_dev
 echo %H%
 
 set d=%H%
@@ -32,3 +32,4 @@ mkdir %d%
 
 xcopy bin\Debug  %H%\GameData\AutomatedScreenShots\Plugins\  /Y
 xcopy src\Textures\*  %H%\GameData\AutomatedScreenShots\Textures /Y
+

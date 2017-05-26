@@ -1,0 +1,55 @@
+﻿0.1.0		initial release
+
+0.2.0		Added pre crash/landing detection 
+			Added ability to take screenshots both with and without UI
+			Bug fixed where if you had the UI hidden, it would be enabled after a screenshot
+			Fixed missing toolbar icons
+0.3.0		Updated logging code so INFO is forced during development/debugging
+			Added code to be able to tell the Historian mod a screenshot is happening.  Needs a small change to Historian to work
+			Cleaned up some more code
+			Updated buildrelease.bat
+			Removed unnecessary PNG files from release
+			Added ChangeLog.txt to release
+			Moved ChangeLog.txt up one directory
+0.4.0		Changed minimum frequency of screenshots from 1 sec to 0.1 sec
+			Fixed bug where no active vessel caused spamming in log file in the SpaceCenter scene
+			Added automated saving of save files
+			Added rotation of save files to limit number of files 
+			Fixed screenshots during timewarp, to NOT take too many snapshots.  Now
+			 uses realtime, not gametime
+			Fixed name of Plugin directory, changed to Plugins
+			Added check for colon in file name, replace it with a dash
+			Updated hour/min/sec time to have leading zeroes
+0.4.1		updated AVC version file
+0.5.0		Added public function for external mods to call to do an automated save
+			Added public funciton for external mods to call to do an automated screenshot
+			Updated zero-padding code for filename to use the ToString() syntax available, save a little codespace
+			Refactored game save code to put all save functions into single class
+0.5.1		Added line to config window to show the activation key for the automated saves.  Not configurable at this time
+0.5.2		Changed from LateUpdate to FixedUpdate, to allow faster screenshots
+			Changed minimum time interval from 0.1 to Time.deltaTime (usualy 0.02)
+			Fixed bug where if screenshots were stopped, and there was a png waiting to be converted, and it was
+				deleted, no more screenshots could be taken until the game was restarted
+0.5.3		Fixed bug where if a directory was unwritable, the screen could get locked with the gui hidden
+			Fixed bug where a relative path would not work.
+0.6.0		Added ability to supersize screenshots
+0.7.1
+0.7.2		Added new option to start autosaving after loading game
+0.7.3		Fixed case issue in file names, only a problem on Linux & OSX
+
+0.7.4		Updated for 1.2
+			
+			Changed toggle for autosave from ctrl-F5 to ctrl-F6
+
+0.7.5		Moved config file into PluginData
+0.7.6		Fixed problem with ToolbarWrapper.cs
+0.7.7		Updated version for 1.2.1
+
+0.7.8		Added AssemblyVersion updating code
+			Fixed window showing up on the main menu after being in a game
+			Fixed toolbar button showing up on the main menu
+0.7.9
+			Now deletes the loadmeta file as well as the sfs file
+
+0.7.*
+			Replaced depreciated call to GameEvents.onLevelWas Loaded with Unity SceneManagment calls

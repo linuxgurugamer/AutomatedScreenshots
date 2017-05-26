@@ -8,7 +8,6 @@ set RELEASEDIR=d:\Users\jbb\release
 set ZIP="c:\Program Files\7-zip\7z.exe"
 echo Default homedir: %DEFHOMEDIR%
 
-rem set /p HOMEDIR= "Enter Home directory, or <CR> for default: "
 
 if "%HOMEDIR%" == "" (
 set HOMEDIR=%DEFHOMEDIR%
@@ -44,43 +43,42 @@ type automatedscreenshots.version
 
 echo Version:  %VERSION%
 del a.version
-set /p newVERSION= "Enter version: "
-if "%newVERSION" NEQ "" set VERSION=%newVERSION%
+rem set /p newVERSION= "Enter version: "
+rem if "%newVERSION" NEQ "" set VERSION=%newVERSION%
 
 
 set d=%HOMEDIR\install
 if exist %d% goto one
 mkdir %d%
 :one
-set d=%HOMEDIR%\install\Gamedata
+set d=Gamedata
 if exist %d% goto two
 mkdir %d%
 :two
-set d=%HOMEDIR%\install\Gamedata\AutomatedScreenShots
+set d=Gamedata\AutomatedScreenShots
 if exist %d% goto three
 mkdir %d%
 :three
-set d=%HOMEDIR%\install\Gamedata\AutomatedScreenShots\Plugins
+set d=Gamedata\AutomatedScreenShots\Plugins
 if exist %d% goto four
 mkdir %d%
 :four
-set d=%HOMEDIR%\install\Gamedata\AutomatedScreenShots\Textures
+set d=Gamedata\AutomatedScreenShots\Textures
 if exist %d% goto five
 mkdir %d%
 :five
-del %HOMEDIR%\install\Gamedata\AutomatedScreenShots\Textures\*.*
-set d=%HOMEDIR%\install\Gamedata\AutomatedScreenShots\PluginData
+rem del Gamedata\AutomatedScreenShots\Textures\*.*
+set d=Gamedata\AutomatedScreenShots\PluginData
 if exist %d% goto six
 mkdir %d%
 :six
 
-rem xcopy src\Textures\AS*.* %HOMEDIR%\install\Gamedata\AutomatedScreenShots\Textures /y
-xcopy src\Textures\Auto*.png   %HOMEDIR%\install\GameData\AutomatedScreenShots\Textures /Y
-copy bin\Release\AutomatedScreenshots.dll %HOMEDIR%\install\Gamedata\AutomatedScreenShots\Plugins
-copy  automatedscreenshots.version %HOMEDIR%\install\Gamedata\AutomatedScreenShots
-copy README.md %HOMEDIR%\install\Gamedata\AutomatedScreenshots
-copy ChangeLog.txt %HOMEDIR%\install\Gamedata\AutomatedScreenshots
-pause
+rem xcopy src\Textures\AS*.* Gamedata\AutomatedScreenShots\Textures /y
+xcopy src\Textures\Auto*.png   GameData\AutomatedScreenShots\Textures /Y
+copy bin\Release\AutomatedScreenshots.dll Gamedata\AutomatedScreenShots\Plugins
+copy  automatedscreenshots.version Gamedata\AutomatedScreenShots
+copy README.md Gamedata\AutomatedScreenshots
+copy ChangeLog.txt Gamedata\AutomatedScreenshots
 
 %HOMEDRIVE%
 cd %HOMEDIR%\install

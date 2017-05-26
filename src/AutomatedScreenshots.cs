@@ -3,13 +3,7 @@
 using System;
 using System.Threading;
 using UnityEngine;
-//using KSP.IO;
-
-//using System.Reflection;
-
-//using KSEA.Historian;
-
-//using System.Globalization;
+using UnityEngine.SceneManagement;
 
 namespace AutomatedScreenshots
 {
@@ -410,17 +404,29 @@ namespace AutomatedScreenshots
 			Log.Info ("RegisterSceneChanges: " + enable.ToString ());
 			if (enable) {
 				GameEvents.onGameSceneLoadRequested.Add (this.CallbackGameSceneLoadRequested);
-				GameEvents.onLevelWasLoaded.Add (this.CallbackLevelWasLoaded);
+				//GameEvents.onLevelWasLoaded.Add (this.CallbackLevelWasLoaded);
 			} else {
 				GameEvents.onGameSceneLoadRequested.Remove (this.CallbackGameSceneLoadRequested);
-				GameEvents.onLevelWasLoadedGUIReady.Remove (this.CallbackLevelWasLoaded);
+				//GameEvents.onLevelWasLoadedGUIReady.Remove (this.CallbackLevelWasLoaded);
 			}
 		}
 
-		//
-		// Register and unregister all the special events here
-		//
-		private  void RegisterSpecialEvents (bool enable)
+        void OnEnable()
+        {
+            //Tell our 'OnLevelFinishedLoading' function to start listening for a scene change as soon as this script is enabled.
+            SceneManager.sceneLoaded += CallbackLevelWasLoaded;
+        }
+
+        void OnDisable()
+        {
+            //Tell our 'OnLevelFinishedLoading' function to stop listening for a scene change as soon as this script is disabled. Remember to always have an unsubscription for every delegate you subscribe to!
+            SceneManager.sceneLoaded -= CallbackLevelWasLoaded;
+        }
+
+        //
+        // Register and unregister all the special events here
+        //
+        private void RegisterSpecialEvents (bool enable)
 		{
 			Log.Info ("RegisterSpecialEvents: " + enable.ToString ());
 			if (enable) {
@@ -486,8 +492,8 @@ namespace AutomatedScreenshots
 			}
 		}
 
-		private void CallbackLevelWasLoaded (GameScenes scene)
-		{
+		private void CallbackLevelWasLoaded(Scene scene, LoadSceneMode mode)
+        {
 			Log.Info ("CallbackLevelWasLoaded");
 			this.sceneReady = true;
 			lastSceneUpdate = Time.realtimeSinceStartup;
