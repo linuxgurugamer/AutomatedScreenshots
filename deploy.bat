@@ -30,6 +30,6 @@ mkdir %d%
 
 
 
-xcopy bin\Debug  %H%\GameData\AutomatedScreenShots\Plugins\  /Y
+copy bin\Debug  %H%\GameData\AutomatedScreenShots\Plugins\AutomatedScreenshots.dll  /Y
 xcopy src\Textures\*  %H%\GameData\AutomatedScreenShots\Textures /Y
 

@@ -51,5 +51,9 @@
 0.7.9
 			Now deletes the loadmeta file as well as the sfs file
 
-0.7.*
+0.8.0
 			Replaced depreciated call to GameEvents.onLevelWas Loaded with Unity SceneManagment calls
+			Updated for 1.3
+
+0.8.0.1
+			Rebuild do to bad packaging
