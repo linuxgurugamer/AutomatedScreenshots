@@ -57,3 +57,6 @@
 
 0.8.0.1
 			Rebuild do to bad packaging
+
+0.8.1
+			Fixed dual screenshots not working all the time

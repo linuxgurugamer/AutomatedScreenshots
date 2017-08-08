@@ -317,8 +317,7 @@ namespace AutomatedScreenshots
 						snapshotInProgress = true;
 						newScene = false;
 						this.specialScene = false;
-
-						lastUpdate = Time.realtimeSinceStartup;
+                        
 						//check if directory doesn't exist
 						if (!System.IO.Directory.Exists (FileOperations.ScreenshotFolder ())) {
 							Log.Info ("Directory does not exist");
@@ -358,7 +357,11 @@ namespace AutomatedScreenshots
 								GameEvents.onShowUI.Fire ();
 							}
 						}
-						screenshotTaken = true;
+                        if (dualScreenshots == 0)
+                        {
+                            lastUpdate = Time.realtimeSinceStartup;
+                            screenshotTaken = true;
+                        }
 						screenshotFile = pngName;
 						//
 						// If Historian is available, then tell it to activate
