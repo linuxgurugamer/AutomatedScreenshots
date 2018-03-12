@@ -24,13 +24,13 @@
 # 0:1.3
 
 # 1:GAMEDIR, VERSIONFILE [, GITHUBREPO ]
-1:AutomatedScreenShots, automatedScreenshots.version
+1:AutomatedScreenShots, automatedscreenshots.version
 
 # 2:PROJNAME, PROJFILE, VERSIONFILE, PLUGINSFOLDER
-2:AutomatedScreenshots,src/AutomatedScreenshots.csproj,automatedScreenshots.version,GameData/AutomatedScreenShots/Plugins
+2:AutomatedScreenshots,src/AutomatedScreenshots.csproj,automatedscreenshots.version,GameData/AutomatedScreenShots/Plugins
 
 # 3:SOURCEFILE, DESTDIR
-3:automatedScreenshots.version,GameData/AutomatedScreenShots
+3:automatedscreenshots.version,GameData/AutomatedScreenShots
 #3:LICENSE.txt,GameData/AutomatedScreenShots
 #3:README.md,GameData/AutomatedScreenShots
 
