@@ -1,34 +1,20 @@
-﻿Rem unusable line
+﻿
+@echo off
 
-set H=R:\KSP_1.3.0_dev
-echo %H%
+rem H is the destination game folder
+rem GAMEDIR is the name of the mod folder (usually the mod name)
+rem GAMEDATA is the name of the local GameData
+rem VERSIONFILE is the name of the version file, usually the same as GAMEDATA,
+rem    but not always
 
-set d=%H%
-if exist %d% goto one
-mkdir %d%
-:one
-set d=%H%\Gamedata
-if exist %d% goto two
-mkdir %d%
-:two
-set d=%H%\Gamedata\AutomatedScreenShots
-if exist %d% goto three
-mkdir %d%
-:three
-set d=%H%\Gamedata\AutomatedScreenShots\Plugins
-if exist %d% goto four
-mkdir %d%
-:four
-set d=%H%\Gamedata\AutomatedScreenShots\Textures
-if exist %d% goto five
-mkdir %d%
-:five
-set d=%H%\Gamedata\AutomatedScreenShots\PluginData
-if exist %d% goto six
-mkdir %d%
-:six
+set H=R:\KSP_1.3.1_dev
+set GAMEDIR=AutomatedScreenShots
+set GAMEDATA="GameData\"
+set VERSIONFILE=%GAMEDIR%.version
 
+copy /Y "%1%2" "%GAMEDATA%\%GAMEDIR%\Plugins"
+copy /Y %VERSIONFILE% %GAMEDATA%\%GAMEDIR%
 
+xcopy /y /s /I %GAMEDATA%\%GAMEDIR% "%H%\GameData\%GAMEDIR%"
 
-copy bin\Debug  %H%\GameData\AutomatedScreenShots\Plugins\AutomatedScreenshots.dll  /Y
-xcopy src\Textures\*  %H%\GameData\AutomatedScreenShots\Textures /Y
+pause
