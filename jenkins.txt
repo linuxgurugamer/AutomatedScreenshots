@@ -27,15 +27,15 @@
 1:AutomatedScreenshots, automatedScreenshots.version
 
 # 2:PROJNAME, PROJFILE, VERSIONFILE, PLUGINSFOLDER
-2:AutomatedScreenshots,src/AutomatedScreenshots.csproj,automatedScreenshots.version,GameData/AutomatedScreenshots/Plugins
+2:AutomatedScreenshots,src/AutomatedScreenshots.csproj,automatedScreenshots.version,GameData/AutomatedScreenShots/Plugins
 
 # 3:SOURCEFILE, DESTDIR
 3:automatedScreenshots.version,GameData/AutomatedScreenShots
-#3:LICENSE.txt,GameData/AutomatedScreenshots
-#3:README.md,GameData/AutomatedScreenshots
+#3:LICENSE.txt,GameData/AutomatedScreenShots
+#3:README.md,GameData/AutomatedScreenShots
 
 # 4:SOURCDIR, DESTDIR
-#4:Textures,GameData/ManeuverQueue/Textures
+#4:Textures,GameData/AutomatedScreenShots/Textures
 
 # 5:ModuleManager
 # 5:ModuleManager
