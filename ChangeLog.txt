@@ -69,3 +69,4 @@
 			Added support for the Click Through Blocker
 			Added support for the ToolbarControler
 			Removed ALL old toolbar code (greatly simplified codebase)
+			Moved textures into PluginData directory to avoid useless error messages from Unity

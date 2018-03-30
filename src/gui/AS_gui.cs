@@ -110,7 +110,7 @@ namespace AutomatedScreenshots
 		{
 			UpdateToolbarStock ();
 		}
-        public const string TEXTURE_DIR = "AutomatedScreenshots/Textures/";
+        public const string TEXTURE_DIR = "AutomatedScreenshots/PluginData/Textures/";
 
         private void UpdateToolbarStock ()
 		{
