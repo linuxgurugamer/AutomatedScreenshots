@@ -21,8 +21,6 @@ namespace AutomatedScreenshots
 
 		public const String TITLE = "Automated Screenshots and Saves";
 
-		//			public Configuration configuration = Configuration.Instance;
-		//			public static AS Instance { get; private set;}
 		private float lastUpdate = 0.0f;
 		private float lastPrecrashUpdate = 0.0f;
 		private int cnt = 0;
@@ -102,12 +100,6 @@ namespace AutomatedScreenshots
 			uiVisiblity.Awake ();
 			Version.VerifyHistorianVersion ();
             GameEvents.onGUIApplicationLauncherUnreadifying.Add(hideNow);
-
-
-            
-
-            //test t = new test();
-            //t.test1();
         }
 
         public void hideNow(GameScenes scene)
@@ -128,17 +120,6 @@ namespace AutomatedScreenshots
 #else
 			Log.SetLevel (configuration.logLevel);
 #endif
-			configuration.BlizzyToolbarIsAvailable = ToolbarManager.ToolbarAvailable;
-			Log.Info ("BlizzyToolbarIsAvailable: " + configuration.BlizzyToolbarIsAvailable.ToString ());
-
-			if (configuration.BlizzyToolbarIsAvailable) {
-				InitToolbarButton ();
-				if (configuration.useBlizzyToolbar) {
-					setToolbarButtonVisibility (true);
-				} else {
-					setToolbarButtonVisibility (false);
-				}
-			}
 
 		}
 
@@ -151,19 +132,7 @@ namespace AutomatedScreenshots
 				RegisterEvents ();
 
 			}
-
-			if (HighLogic.LoadedScene == GameScenes.MAINMENU) {
-				if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar)
-					gui.OnGUIHideApplicationLauncher ();
-			} else {
-				if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {
-					if (MainMenuGui.AS_Button == null)
-						GameEvents.onGUIApplicationLauncherReady.Add (gui.OnGUIApplicationLauncherReady);
-					gui.OnGUIShowApplicationLauncher ();
-				} else {
-					setToolbarButtonVisibility (true);
-				}
-			}
+            gui.OnGUIApplicationLauncherReady();
 
 			if (changeCallbacks) {
 				Log.Info ("Update - changeCallbacks: " + changeCallbacks.ToString ());
@@ -174,7 +143,6 @@ namespace AutomatedScreenshots
 			    Input.GetKeyDown (KeyCode.F6)) {
 				AS.configuration.autoSave = !AS.configuration.autoSave;
 				this.gui.set_AS_Button_active ();
-				ToolBarBusy (AS.configuration.autoSave, AS.doSnapshots);
 				Log.Info ("AutoSave: " + AS.configuration.autoSave.ToString ());
 			}
 
@@ -183,31 +151,15 @@ namespace AutomatedScreenshots
 				Log.Info ("Update:     GameScene: " + HighLogic.LoadedScene.ToString ());
 				if (HighLogic.LoadedScene != GameScenes.MAINMENU) {
 					Log.Info ("KeyCode: " + activeKeycode.ToString () + " pressed");
-					if (!doSnapshots) {
-						if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {
-							Log.Info ("Before MainMenuGui.AS_Button.SetTexture on");
-							MainMenuGui.AS_Button.SetTexture (MainMenuGui.AS_button_config);
-
-							Log.Info ("After MainMenuGui.AS_Button.SetTexture");
-						} else {
-							ToolBarActive (true);
-
-						}
-					} else {
-						if (!configuration.BlizzyToolbarIsAvailable || !configuration.useBlizzyToolbar) {	
-							Log.Info ("MainMenuGui.AS_Button.SetTexture off");
-							MainMenuGui.AS_Button.SetTexture (MainMenuGui.AS_button_off);
-							Log.Info ("After MainMenuGui.AS_Button.SetTexture");
-						} else {
-							ToolBarActive (false);
-						}
-					}
-						
+					if (!doSnapshots)
+                        MainMenuGui.toolbarControl.SetTexture(MainMenuGui.TEXTURE_DIR + "Auto-negative-38", MainMenuGui.TEXTURE_DIR + "Auto-negative-24");
+                    else
+                        MainMenuGui.toolbarControl.SetTexture(MainMenuGui.TEXTURE_DIR + "Auto-38", MainMenuGui.TEXTURE_DIR + "Auto-24");
+                   						
 					doSnapshots = !doSnapshots;
 					if (!doSnapshots && screenshotTaken && configuration.noGUIOnScreenshot == true && wasUIVisible)
 						GameEvents.onShowUI.Fire ();
 					this.gui.set_AS_Button_active ();
-					ToolBarBusy (AS.configuration.autoSave, AS.doSnapshots);
 					Log.Info ("LoadedScene   doSnapshots: " + doSnapshots.ToString ());
 				} else if (HighLogic.LoadedScene == GameScenes.MAINMENU) {
 					Log.Info ("LoadedScene = MAINMENU   doSnapshots: " + doSnapshots.ToString ());
@@ -216,32 +168,7 @@ namespace AutomatedScreenshots
 			}
 			
 		}
-		#if false
-		public void BackupWork ()
-		{
-			SaveFilesHandlers sfh  = new SaveFilesHandlers ();
 
-			// SaveMode is:  OVERWRITE    APPEND   ABORT
-			SaveMode s = SaveMode.OVERWRITE;
-
-			saveFileCnt = sfh.FileSaveCnt(KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder) + 1;
-			string saveFileName = AddInfo (configuration.savePrefix, saveFileCnt, sceneReady,  specialScene,  precrash);
-
-			string str = GamePersistence.SaveGame (saveFileName, HighLogic.SaveFolder, s);
-			Log.Info ("String: " + str);
-
-			sfh.deleteOldestSaveFile (KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder, configuration.numToRotate, saveFileCnt, saveFileName);
-
-			Log.Info ("backup thread terminated");
-		}
-
-
-		private void startBackup ()
-		{
-			this.backupThread = new Thread (new ThreadStart (this.BackupWork));
-			this.backupThread.Start ();
-		}
-#endif
 		public void FixedUpdate()
 //		public void LateUpdate ()
 		{
@@ -367,10 +294,11 @@ namespace AutomatedScreenshots
 						// If Historian is available, then tell it to activate
 						//
 						Version.set_m_Active ();
-						// Change second number for supersize.  If non-zero,
-						// then multiplies the resolution by that number
-						// Must be an integer
-						Application.CaptureScreenshot (pngName, configuration.supersize);
+                        // Change second number for supersize.  If non-zero,
+                        // then multiplies the resolution by that number
+                        // Must be an integer
+                        ScreenCapture.CaptureScreenshot (pngName, configuration.supersize);
+
 
 						if (configuration.convertToJPG) {
 							pngToConvert = pngName;
@@ -399,7 +327,6 @@ namespace AutomatedScreenshots
 			AS.configuration.autoSave = AS.configuration.autoSaveOnGameStart;
 			gui.OnGUIApplicationLauncherReady();
 			gui.set_AS_Button_active ();
-			ToolBarBusy (AS.configuration.autoSave, AS.doSnapshots);
 		}
 
 		private void RegisterSceneChanges (bool  enable)
@@ -605,7 +532,10 @@ namespace AutomatedScreenshots
 		internal void OnDestroy ()
 		{
 			Log.Info ("destroying Automated Screenshots");
-			DelToolbarButton ();
+            MainMenuGui.toolbarControl.OnDestroy();
+            Destroy(MainMenuGui.toolbarControl);
+
+            //DelToolbarButton ();
 			configuration.Save ();
 		}
 
@@ -772,49 +702,4 @@ namespace AutomatedScreenshots
 		}
 	}
 
-
-#if false
-//string comparision ignoring case
-
-//First example:
-
-public static class StringExtensions
-{
-	public static bool Contains (this string source, string toCheck, StringComparison comp)
-	{
-		return source.IndexOf (toCheck, comp) >= 0;
-	}
-}
-public class test
-{
-
-
-	public static void test1 ()
-	{
-		string title = "STRING";
-		bool contains = title.Contains ("string", StringComparison.OrdinalIgnoreCase);
-	}
-}
-
-
-class test
-{
-	string AddInfo (string original, string caller, int cnt, Func<string, string> callbackFunc = null)
-	{
-		string str = callbackFunc (original);
-		return str;
-	}
-	string callbackFunc(string str) 
-	{
-		return str;
-	}
-	public  void test1()
-	{
-		string a;
-		a = "abcde";
-		Log.Info("test1: " + AddInfo(a, "test", 0, callbackFunc));
-	}
-		
-}
-	#endif
 }
