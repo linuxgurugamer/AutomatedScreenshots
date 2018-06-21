@@ -26,7 +26,6 @@ namespace AutomatedScreenshots
 		public ushort JPGQuality { get; set; }
 		public bool screenshotOnSceneChange { get; set; }
 		public bool onSpecialEvent { get; set; }
-		public bool useBlizzyToolbar { get; set; }
 		public bool noGUIOnScreenshot { get; set; }
 		public bool guiOnScreenshot { get; set; }
 		public string keycode { get; set; }
@@ -72,7 +71,6 @@ namespace AutomatedScreenshots
 			JPGQuality = 75;
 			screenshotOnSceneChange = false;
 			onSpecialEvent = false;
-			useBlizzyToolbar = false;
 			keycode = "F6";
 
 			precrashSnapshots = false;

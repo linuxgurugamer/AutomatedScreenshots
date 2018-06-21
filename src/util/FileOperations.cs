@@ -113,7 +113,6 @@ namespace AutomatedScreenshots
 			configFileNode.SetValue ("JPGQuality", configuration.JPGQuality.ToString (), true);
 			configFileNode.SetValue ("asynchronous", configuration.asynchronous.ToString (), true);
 			configFileNode.SetValue ("screenshotOnSceneChange", configuration.screenshotOnSceneChange.ToString (), true);
-			configFileNode.SetValue ("useBlizzyToolbar", configuration.useBlizzyToolbar.ToString (), true);
 			configFileNode.SetValue ("onSpecialEvent", configuration.onSpecialEvent.ToString (), true);
 			configFileNode.SetValue ("keycode", configuration.keycode.ToString (), true);
 			configFileNode.SetValue ("noGUIOnScreenshot", configuration.noGUIOnScreenshot.ToString (), true);
@@ -194,7 +193,6 @@ namespace AutomatedScreenshots
 					configuration.JPGQuality = ushort.Parse (SafeLoad(configFileNode.GetValue ("JPGQuality"),configuration.JPGQuality));
 					configuration.asynchronous = bool.Parse (SafeLoad(configFileNode.GetValue ("asynchronous"),configuration.asynchronous));
 					configuration.screenshotOnSceneChange = bool.Parse (SafeLoad(configFileNode.GetValue ("screenshotOnSceneChange"),configuration.screenshotOnSceneChange));
-					configuration.useBlizzyToolbar = bool.Parse (SafeLoad(configFileNode.GetValue ("useBlizzyToolbar"),configuration.useBlizzyToolbar));
 					configuration.onSpecialEvent = bool.Parse (SafeLoad(configFileNode.GetValue ("onSpecialEvent"),configuration.onSpecialEvent));
 					configuration.keycode = SafeLoad(configFileNode.GetValue ("keycode"),configuration.keycode);
 					if (configuration.keycode == null)

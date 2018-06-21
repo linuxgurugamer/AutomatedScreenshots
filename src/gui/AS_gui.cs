@@ -9,7 +9,15 @@ using ToolbarControl_NS;
 
 namespace AutomatedScreenshots
 {
-	public class MainMenuGui : MonoBehaviour
+    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
+    public class RegisterToolbar : MonoBehaviour
+    {
+        void Start()
+        {
+            ToolbarControl.RegisterMod(MainMenuGui.MODID, MainMenuGui.MODNAME);
+        }
+    }
+    public class MainMenuGui : MonoBehaviour
 	{
         public static MainMenuGui Instance;
 
@@ -111,7 +119,8 @@ namespace AutomatedScreenshots
 			UpdateToolbarStock ();
 		}
         public const string TEXTURE_DIR = "AutomatedScreenshots/PluginData/Textures/";
-
+        internal const string MODID = "AutomatedScreenshot_NS";
+        internal const string MODNAME = "Automated Screenshot";
         private void UpdateToolbarStock ()
 		{
 			Log.Info ("UpdateToolbarStock, appLaucherHidden: " + appLaucherHidden.ToString());
@@ -121,13 +130,12 @@ namespace AutomatedScreenshots
                 toolbarControl = gameObject.AddComponent<ToolbarControl>();
                 toolbarControl.AddToAllToolbars(GUIToggle, GUIToggleFalse,
                     ApplicationLauncher.AppScenes.ALWAYS & ~ApplicationLauncher.AppScenes.MAINMENU,
-                    "AutomatedScreenshot_NS",
+                    MODID,
                     "automatedScreenshotButton",
                     MainMenuGui.TEXTURE_DIR + "Auto-38",
                     MainMenuGui.TEXTURE_DIR + "Auto-24",
-                    "Automated Screenshot"
+                    MODNAME
                 );
-                toolbarControl.UseBlizzy(AS.configuration.useBlizzyToolbar);
             }
         }
 
@@ -155,9 +163,6 @@ namespace AutomatedScreenshots
 		/////////////////////////////////////
 		public void OnGUI ()
 		{
-            if (toolbarControl != null)
-                toolbarControl.UseBlizzy(AS.configuration.useBlizzyToolbar);
-
             try
             {
 				if (this.Visible ()) {
@@ -185,7 +190,6 @@ namespace AutomatedScreenshots
 				newJPGQuality = AS.configuration.JPGQuality;
 				JPGQuality = newJPGQuality.ToString ();
 				newScreenshotOnSceneChange = AS.configuration.screenshotOnSceneChange;
-				newUseBlizzyToolbar = AS.configuration.useBlizzyToolbar;
 				newOnSpecialEvent = AS.configuration.onSpecialEvent;
 				newKeycode = AS.configuration.keycode;
 
@@ -470,7 +474,6 @@ namespace AutomatedScreenshots
 			if (AS.configuration.JPGQuality < 1 || AS.configuration.JPGQuality > 100)
 				AS.configuration.JPGQuality = 75;
 			AS.configuration.screenshotOnSceneChange = newScreenshotOnSceneChange;	
-			AS.configuration.useBlizzyToolbar = newUseBlizzyToolbar;
 			AS.configuration.onSpecialEvent = newOnSpecialEvent;
 			AS.configuration.keycode = newKeycode;
 			AS.configuration.noGUIOnScreenshot = newNoGUIOnScreenshot;
@@ -527,14 +530,16 @@ namespace AutomatedScreenshots
 				GUI_SaveData ();
 
 				AS.configuration.Save ();
-				if (AS.configuration.BlizzyToolbarIsAvailable && AS.configuration.useBlizzyToolbar) {
+#if false
+                if (AS.configuration.BlizzyToolbarIsAvailable && AS.configuration.useBlizzyToolbar) {
 					HideToolbarStock ();
 ;
 				} else {
+#endif
 					UpdateToolbarStock ();
 					set_AS_Button_active();
 
-				}
+		//		}
 
 			}
 		}

@@ -70,3 +70,7 @@
 			Added support for the ToolbarControler
 			Removed ALL old toolbar code (greatly simplified codebase)
 			Moved textures into PluginData directory to avoid useless error messages from Unity
+
+0.8.4
+	Updated code to use latest version of ToolbarController
+	Removed blizzy options, now handled by ToolbarController
