@@ -1,0 +1,30 @@
+{
+	"NAME":"AutomatedScreenshots",
+	"URL":"http://ksp.spacetux.net/avc/automatedscreenshots",
+	"DOWNLOAD":"https://kerbalstuff.com/mod/1086",
+	"VERSION":
+	{
+		"MAJOR":0,
+		"MINOR":8,
+		"PATCH":4,
+		"BUILD":2
+	},
+	"KSP_VERSION":
+	{
+		"MAJOR":1, 
+		"MINOR":5,
+		"PATCH":1
+	},
+	"KSP_VERSION_MIN": 
+	{
+		"MAJOR": 1,
+		"MINOR": 5,
+		"PATCH": 1
+	},
+	"KSP_VERSION_MAX": 
+	{
+		"MAJOR": 1,
+		"MINOR": 5,
+		"PATCH": 99
+	}
+}
