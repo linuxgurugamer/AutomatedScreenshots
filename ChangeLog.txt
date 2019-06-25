@@ -81,6 +81,6 @@
 0.8.4.2
 	Version bump for 1.5 rebuild
 
-0.8.5.3
+0.8.4.3
 	Version bump for 1.7.2
 	Updated AssemblyVersion.tt to be location-independent
