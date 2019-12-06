@@ -15,12 +15,12 @@ namespace AutomatedScreenshots
 {
 	public  class FileOperations
 	{
-		public static readonly String ROOT_PATH = KSPUtil.ApplicationRootPath;
-		private static readonly String CONFIG_BASE_FOLDER = ROOT_PATH + "GameData/";
-		private static String AS_BASE_FOLDER = CONFIG_BASE_FOLDER + "AutomatedScreenShots/";
-		private static String AS_NODENAME = "AutomatedScreenShots";
-        private static String AS_CFG_FILE = AS_BASE_FOLDER + "PluginData/AS_Settings.cfg";
-        private static String AS_OLD_CFG_FILE = AS_BASE_FOLDER + "AS_Settings.cfg";
+        public static String ROOT_PATH;
+        internal static String CONFIG_BASE_FOLDER;
+        internal static String AS_BASE_FOLDER;
+        internal static String AS_NODENAME;
+        internal static String AS_CFG_FILE;
+        internal static String AS_OLD_CFG_FILE;
 
 
         private static ConfigNode configFile = null;

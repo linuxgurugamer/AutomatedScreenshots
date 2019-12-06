@@ -99,3 +99,6 @@
 
 0.8.5.3
 	Really did the MiniAVC update
+
+0.8.5.4
+	Fixed initialization for new Unity version with KSP 1.8

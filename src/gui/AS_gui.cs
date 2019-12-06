@@ -15,8 +15,17 @@ namespace AutomatedScreenshots
         void Start()
         {
             ToolbarControl.RegisterMod(MainMenuGui.MODID, MainMenuGui.MODNAME);
-        }
+
+
+                    FileOperations. ROOT_PATH = KSPUtil.ApplicationRootPath;
+            FileOperations.CONFIG_BASE_FOLDER = FileOperations.ROOT_PATH + "GameData/";
+            FileOperations.AS_BASE_FOLDER = FileOperations.CONFIG_BASE_FOLDER + "AutomatedScreenShots/";
+            FileOperations.AS_NODENAME = "AutomatedScreenShots";
+            FileOperations.AS_CFG_FILE = FileOperations.AS_BASE_FOLDER + "PluginData/AS_Settings.cfg";
+            FileOperations.AS_OLD_CFG_FILE = FileOperations.AS_BASE_FOLDER + "AS_Settings.cfg";
+
     }
+}
     public class MainMenuGui : MonoBehaviour
 	{
         public static MainMenuGui Instance;
@@ -36,7 +45,7 @@ namespace AutomatedScreenshots
 		public static Texture2D AS_button_snapshot_save = new Texture2D (38, 38, TextureFormat.ARGB32, false);
 
 
-		private bool AS_Texture_Load = false;
+		//private bool AS_Texture_Load = false;
 
 		private bool cfgWinData = false;
 //		private static bool newScreenshotAtIntervals = true;
