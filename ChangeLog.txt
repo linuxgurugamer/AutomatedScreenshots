@@ -102,3 +102,7 @@
 
 0.8.5.4
 	Fixed initialization for new Unity version with KSP 1.8
+
+0.8.5.5
+	Added AssemblyFileVersion
+	Updated version file for 1.12
