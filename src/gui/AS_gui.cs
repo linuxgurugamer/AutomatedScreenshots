@@ -127,7 +127,7 @@ namespace AutomatedScreenshots
 		{
 			UpdateToolbarStock ();
 		}
-        public const string TEXTURE_DIR = "AutomatedScreenshots/PluginData/Textures/";
+        public const string TEXTURE_DIR = "AutomatedScreenShots/PluginData/Textures/";
         internal const string MODID = "AutomatedScreenshot_NS";
         internal const string MODNAME = "Automated Screenshot";
         private void UpdateToolbarStock ()
