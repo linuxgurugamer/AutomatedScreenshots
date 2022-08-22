@@ -109,3 +109,6 @@
 
 0.8.5.6
 	Fixed case of the mod directory when loading icons (from AutomatedScreenshots to AutomatedScreenShots)
+
+0.8.5.7
+	Fixed small memory leak

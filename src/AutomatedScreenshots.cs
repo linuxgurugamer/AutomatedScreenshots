@@ -530,7 +530,10 @@ namespace AutomatedScreenshots
 		internal void OnDestroy ()
 		{
 			Log.Info ("destroying Automated Screenshots");
-            MainMenuGui.toolbarControl.OnDestroy();
+			if (uiVisiblity != null)
+				uiVisiblity.OnDestroy ();
+
+			MainMenuGui.toolbarControl.OnDestroy();
             Destroy(MainMenuGui.toolbarControl);
 
             //DelToolbarButton ();
