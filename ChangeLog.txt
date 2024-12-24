@@ -112,3 +112,7 @@
 
 0.8.5.7
 	Fixed small memory leak
+
+0.8.5.8
+	Updated version file to use github for new version info
+	Updated version file to change second KSP_VERSION_MIN to be KSP_VERSION_MAX
